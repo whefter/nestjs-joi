@@ -1,0 +1,17 @@
+.env
+/.vs*
+/nbproject*
+/.idea*
+**/node_modules*
+/build
+/build/*
+**/temp
+**/temp/*
+/coverage
+/coverage/*
+/data
+/data/*
+/test-reports
+/test-reports/*
+/.nyc_output
+/.nyc_output/*

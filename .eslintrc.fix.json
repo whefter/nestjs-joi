@@ -1,0 +1,7 @@
+{
+  "extends": [
+    "@elunic/eslint-config-ecs/fix",
+    ".eslintrc.json"
+  ],
+  "rules": {}
+}

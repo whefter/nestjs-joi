@@ -1,0 +1,4 @@
+{
+  "extends": "@elunic/eslint-config-ecs",
+  "rules": {}
+}
