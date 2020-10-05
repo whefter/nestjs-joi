@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import Joi = require('joi');
+import * as Joi from 'joi';
 
-import { JoiSchema } from '../../src';
+import { JoiSchema } from '../../../src';
 
 describe('@JoiSchema()', () => {
   describe('arguments', () => {
@@ -13,6 +13,9 @@ describe('@JoiSchema()', () => {
         class test {
           @JoiSchema(Joi.string())
           prop!: string;
+
+          @JoiSchema(Joi.number())
+          otherProp!: number;
         }
       } catch (error_) {
         error = error_;

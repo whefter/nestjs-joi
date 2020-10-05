@@ -8,6 +8,10 @@ export const JoiValidationGroups = {
   UPDATE: Symbol('UPDATE'),
 };
 
+export const DEFAULT = JoiValidationGroups.DEFAULT;
+export const CREATE = JoiValidationGroups.CREATE;
+export const UPDATE = JoiValidationGroups.UPDATE;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Constructor<T = any> extends Function {
   new (...args: unknown[]): T;

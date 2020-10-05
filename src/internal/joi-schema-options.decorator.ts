@@ -37,11 +37,11 @@ export function JoiSchemaOptions(...args: unknown[]): ClassDecorator {
     throw error;
   }
 
-  return function (target: typeof Object.prototype): void {
-    // Get existing meta, if applicate, set options for each passed group,
+  return function (target: Function): void {
+    // Get existing meta, if applicable, set options for each passed group,
     // throw if options for group already set
     const optionsMeta: ClassOptionsMetadata =
-      Reflect.getMetadata(OPTIONS_PROTO_KEY, target) || new Map();
+      Reflect.getOwnMetadata(OPTIONS_PROTO_KEY, target) || new Map();
 
     const finalGroups: Array<string | symbol> = groups.length
       ? groups

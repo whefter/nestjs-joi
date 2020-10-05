@@ -4,13 +4,19 @@
     "json",
     "ts"
   ],
-  "rootDir": "test/src/",
   "testEnvironment": "node",
-  "testRegex": ".spec.ts$",
+  "testRegex": "test/.*\\.spec\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "setupFilesAfterEnv": [
-    "<rootDir>/../setup.ts"
+    "<rootDir>/test/setup.ts"
+  ],
+  "collectCoverage": true,
+  "coverageDirectory": "coverage/",
+  "coverageReporters": [
+    "text-summary",
+    "json",
+    "html"
   ]
 }

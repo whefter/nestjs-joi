@@ -49,26 +49,26 @@ export class JoiPipe implements PipeTransform {
   constructor(type: Constructor, pipeOpts?: JoiPipeOptions);
   constructor(schema: Joi.Schema, pipeOpts?: JoiPipeOptions);
   constructor(
-    @Inject(REQUEST) private readonly request?: unknown,
+    @Inject(REQUEST) private readonly arg?: unknown,
     @Optional() pipeOpts?: JoiPipeOptions,
   ) {
-    if (request) {
+    if (arg) {
       // Test for an actual request object, which indicates we're in "injected" mode.
       // This is the case that requires the most performant handling, which is why it
       // should be the first branch.
       // TODO Check if there is a more efficient/reliable test for generic request objects
-      if ('method' in (request as {}) && 'headers' in (request as {})) {
-        this.method = (request as { method: string }).method;
+      if ('method' in (arg as {})) {
+        this.method = (arg as { method: string }).method.toUpperCase();
       } else {
         // This is the "manually called constructor" case, where performance is
         // (ostensibly) not as big of a concern since manual JoiPipes will be
         // constructed only once at app initialization
-        if (Joi.isSchema(request)) {
-          this.schema = request as Joi.Schema;
-        } else if (typeof request === 'function') {
-          this.type = request as Constructor;
+        if (Joi.isSchema(arg)) {
+          this.schema = arg as Joi.Schema;
+        } else if (typeof arg === 'function') {
+          this.type = arg as Constructor;
         } else {
-          pipeOpts = request as JoiPipeOptions;
+          pipeOpts = arg as JoiPipeOptions;
         }
 
         pipeOpts = pipeOpts || {};
@@ -96,12 +96,16 @@ export class JoiPipe implements PipeTransform {
       return payload;
     }
 
-    return JoiPipe.transform(payload, schema, metadata);
+    return JoiPipe.validate(payload, schema, metadata);
   }
 
-  private static transform<T>(
+  // Called "validate" and NOT "transform", because that would make it match
+  // the interface of a pipe INSTANCE and prevent NestJS from recognizing it as
+  // a class constructor instead of an instance.
+  private static validate<T>(
     payload: unknown,
     schema: Joi.Schema,
+    /* istanbul ignore next */
     metadata: ArgumentMetadata = { type: 'custom' },
   ): T {
     const { error, value } = schema.validate(
@@ -185,6 +189,7 @@ export class JoiPipe implements PipeTransform {
    */
   private static getTypeSchema(
     type: Constructor,
+    /* istanbul ignore next */
     { forced, group }: { forced?: boolean; group?: JoiValidationGroup } = {},
   ): Joi.Schema | undefined {
     // Do not validate basic inbuilt types
@@ -196,8 +201,10 @@ export class JoiPipe implements PipeTransform {
 
     // Check cache.
     if (this.typeSchemaMap.has(type)) {
-      if (this.typeSchemaMap.get(type)?.has(cacheKey)) {
-        return this.typeSchemaMap.get(type)?.get(cacheKey);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (this.typeSchemaMap.get(type)!.has(cacheKey)) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.typeSchemaMap.get(type)!.get(cacheKey);
       }
     } else {
       this.typeSchemaMap.set(type, new Map());
@@ -222,16 +229,18 @@ export class JoiPipe implements PipeTransform {
     const options: Joi.ValidationOptions = {};
     for (const proto of reverse(protoChain)) {
       // Check for options information on proto
-      const optionsMeta: ClassOptionsMetadata | undefined = Reflect.getMetadata(
+      const optionsMeta: ClassOptionsMetadata | undefined = Reflect.getOwnMetadata(
         OPTIONS_PROTO_KEY,
-        proto,
+        proto.constructor,
       );
       // Decorator was used to specify options on this proto
       if (optionsMeta) {
         let protoOptions: Joi.ValidationOptions = {};
-        if (group && optionsMeta.has(group)) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          protoOptions = optionsMeta.get(group)!;
+        if (group) {
+          if (optionsMeta.has(group)) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            protoOptions = optionsMeta.get(group)!;
+          }
         } else if (optionsMeta.has(JoiValidationGroups.DEFAULT)) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           protoOptions = optionsMeta.get(JoiValidationGroups.DEFAULT)!;
@@ -243,17 +252,22 @@ export class JoiPipe implements PipeTransform {
       }
 
       // Check for property information on proto
-      const protoProps: string[] = Reflect.getMetadata(SCHEMA_PROTO_KEY, proto) || [];
+      /* istanbul ignore next */
+      const protoProps: string[] = Reflect.getOwnMetadata(SCHEMA_PROTO_KEY, proto) || [];
       for (const prop of protoProps) {
-        const propMeta: PropertySchemaMetadata = Reflect.getMetadata(SCHEMA_PROP_KEY, proto, prop);
+        const propMeta: PropertySchemaMetadata = Reflect.getOwnMetadata(
+          SCHEMA_PROP_KEY,
+          proto,
+          prop,
+        );
 
         // Ignore property if not part of designated validation group
         let schemaOrType: Joi.Schema | Constructor | Constructor[];
         let schemaFn: SchemaCustomizerFn | undefined;
-        if (group && propMeta.has(group)) {
+        if (propMeta && group && propMeta.has(group)) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           ({ schemaOrType, schemaFn } = propMeta.get(group)!);
-        } else if (propMeta.has(JoiValidationGroups.DEFAULT)) {
+        } else if (propMeta && propMeta.has(JoiValidationGroups.DEFAULT)) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           ({ schemaOrType, schemaFn } = propMeta.get(JoiValidationGroups.DEFAULT)!);
         } else {
@@ -287,14 +301,16 @@ export class JoiPipe implements PipeTransform {
     // validate, otherwise we'd get errors for types with no decorators not intended
     // to be validated when used as global pipe
     if (!props.length && !forced) {
-      this.typeSchemaMap.get(type)?.set(cacheKey, undefined);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      this.typeSchemaMap.get(type)!.set(cacheKey, undefined);
       return undefined;
     }
 
     const fullSchema = Joi.object().keys(schemas).required().options(options);
 
     // Cache value
-    this.typeSchemaMap.get(type)?.set(cacheKey, fullSchema);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.typeSchemaMap.get(type)!.set(cacheKey, fullSchema);
 
     return fullSchema;
   }

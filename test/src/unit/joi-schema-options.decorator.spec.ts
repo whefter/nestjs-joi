@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import Joi = require('joi');
+import * as Joi from 'joi';
 
-import { JoiSchema, JoiSchemaOptions } from '../../src';
+import { JoiSchemaOptions } from '../../../src';
 
 describe('@JoiSchemaOptions()', () => {
   describe('arguments', () => {

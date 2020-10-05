@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import Joi = require('joi');
+import { BadRequestException } from '@nestjs/common';
+import * as Joi from 'joi';
 
-import { JoiPipe, JoiSchema } from '../../src';
+import { JoiPipe } from '../../../src';
 
 describe('JoiPipe', () => {
   describe('arguments', () => {
@@ -115,7 +116,6 @@ describe('JoiPipe', () => {
         new JoiPipe({
           // @ts-ignore
           method: 'get',
-          headers: [],
         });
       } catch (error_) {
         error = error_;
@@ -125,7 +125,7 @@ describe('JoiPipe', () => {
     });
   });
 
-  describe('basic transform()', () => {
+  describe('transform()', () => {
     it('should run validation on a passed payload', async () => {
       const pipe = new JoiPipe(Joi.string());
 
@@ -133,7 +133,49 @@ describe('JoiPipe', () => {
         pipe.transform(1, { type: 'query' });
         throw new Error('should not be thrown');
       } catch (error) {
-        expect(error.message).toContain('"value" must be a string');
+        expect(error.message).toContain(
+          'Request validation of query failed, because: "value" must be a string',
+        );
+      }
+    });
+
+    it('should throw a BadRequestException on fail', async () => {
+      const pipe = new JoiPipe(Joi.string());
+
+      try {
+        pipe.transform(1, { type: 'query' });
+        throw new Error('should not be thrown');
+      } catch (error) {
+        expect(error instanceof BadRequestException).toBe(true);
+      }
+    });
+
+    it('should throw an error with a message containing all the details from Joi', async () => {
+      const pipe = new JoiPipe(
+        Joi.object().keys({
+          one: Joi.string().required(),
+          two: Joi.string().required(),
+        }),
+      );
+
+      try {
+        pipe.transform({}, { type: 'query' });
+        throw new Error('should not be thrown');
+      } catch (error) {
+        expect(error.message).toContain(
+          'Request validation of query failed, because: "one" is required, "two" is required',
+        );
+      }
+    });
+
+    it('should use the "data" field from metadata in error message, if passed', async () => {
+      const pipe = new JoiPipe(Joi.string());
+
+      try {
+        pipe.transform(1, { type: 'query', data: 'foo' });
+        throw new Error('should not be thrown');
+      } catch (error) {
+        expect(error.message).toContain(`Request validation of query item 'foo' failed`);
       }
     });
 

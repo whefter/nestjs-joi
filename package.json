@@ -1,7 +1,7 @@
 {
   "name": "nestjs-joi",
   "version": "1.0.0-beta.1",
-  "description": "",
+  "description": "Easy to use JoiPipe as an interface between joi and NestJS with optional decorator-based schema construction.",
   "scripts": {
     "test": "NODE_ENV=testing jest -c .jest.json --watchAll",
     "test:debug": "NODE_ENV=testing node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest -c .jest.json --runInBand",
@@ -14,9 +14,16 @@
     "fix": "eslint -c .eslintrc.fix.json --fix '{src,test}/**/*.{ts,js}'",
     "precommit": "lint-staged"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "nestjs",
+    "joi"
+  ],
+  "author": "William Hefter",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/whefter/nestjs-joi"
+  },
   "dependencies": {
     "joi": "^17.2.1",
     "lodash": "^4.17.20"
@@ -29,7 +36,8 @@
     "@elunic/eslint-config-ecs": "^0.1.4",
     "@nestjs/common": "^7.4.4",
     "@nestjs/core": "^7.4.4",
-    "@nestjs/testing": "^7.1.3",
+    "@nestjs/platform-express": "^7.4.4",
+    "@nestjs/testing": "^7.4.4",
     "@types/eslint": "^6.8.1",
     "@types/jest": "^26.0.14",
     "@types/lodash": "^4.14.161",
@@ -53,5 +61,15 @@
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "~4.0.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^7.0.0",
+    "@nestjs/core": "^7.0.0"
+  },
+  "engines": {
+    "node": ">= 10.13.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

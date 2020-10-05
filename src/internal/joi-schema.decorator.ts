@@ -72,7 +72,7 @@ export function JoiSchema(...args: unknown[]): PropertyDecorator {
       throw new Error(`Invalid target property (symbol).`);
     }
 
-    const protoList: string[] = Reflect.getMetadata(SCHEMA_PROTO_KEY, target) || [];
+    const protoList: string[] = Reflect.getOwnMetadata(SCHEMA_PROTO_KEY, target) || [];
     protoList.push(propertyKey);
     Reflect.defineMetadata(
       SCHEMA_PROTO_KEY,
@@ -81,10 +81,10 @@ export function JoiSchema(...args: unknown[]): PropertyDecorator {
       target,
     );
 
-    // Get existing meta, if applicate, set schema for each passed group, throw if schema for group
+    // Get existing meta, if applicable, set schema for each passed group, throw if schema for group
     // already set
     const propMeta: PropertySchemaMetadata =
-      Reflect.getMetadata(SCHEMA_PROP_KEY, target, propertyKey) || new Map();
+      Reflect.getOwnMetadata(SCHEMA_PROP_KEY, target, propertyKey) || new Map();
 
     const finalGroups: Array<string | symbol> = groups.length
       ? groups
