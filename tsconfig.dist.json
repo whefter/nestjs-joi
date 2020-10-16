@@ -2,9 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "sourceMap": false,
-    "declaration": false,
+    "declaration": true,
     "removeComments": true,
-    "target": "es5"
+    "target": "es2015"
   },
   "exclude": [
     "test/**/*",

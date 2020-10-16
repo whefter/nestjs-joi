@@ -1,3 +1,5 @@
+name: CI
+
 on:
   push:
     branches:
@@ -14,7 +16,7 @@ jobs:
         with:
           node-version: '12'
       - run: npm install
-      - run: npm test
+      - run: npm run test:once
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:

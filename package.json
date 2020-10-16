@@ -1,6 +1,6 @@
 {
   "name": "nestjs-joi",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0",
   "description": "Easy to use JoiPipe as an interface between joi and NestJS with optional decorator-based schema construction.",
   "scripts": {
     "test": "NODE_ENV=testing jest -c .jest.json --watchAll",
@@ -8,7 +8,7 @@
     "test:once": "NODE_ENV=testing jest -c .jest.json --coverage",
     "posttest:once": "npm run check",
     "clean": "rm -rf dist/",
-    "compile": "echo Compiling... && tsc -p .",
+    "compile": "npm run clean && echo Compiling... && tsc -p .",
     "compile:dist": "npm run clean && echo Compiling... && tsc -p tsconfig.dist.json",
     "check": "eslint -c .eslintrc.fix.json '{src,test}/**/*.{ts,js}'",
     "fix": "eslint -c .eslintrc.fix.json --fix '{src,test}/**/*.{ts,js}'",
@@ -24,15 +24,17 @@
     "type": "git",
     "url": "https://github.com/whefter/nestjs-joi"
   },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "typings": "index.d.ts",
   "dependencies": {
-    "joi": "^17.2.1",
     "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@elunic/ecs-tsconfig": "^0.1.1",
     "@elunic/ecs-prettier": "^0.2.1",
+    "@elunic/ecs-tsconfig": "^0.1.1",
     "@elunic/eslint-config-ecs": "^0.1.4",
     "@nestjs/common": "^7.4.4",
     "@nestjs/core": "^7.4.4",
@@ -50,6 +52,7 @@
     "husky": "^4.3.0",
     "jest": "^26.4.2",
     "jest-junit": "^10.0.0",
+    "joi": "^17.2.1",
     "lint-staged": "^8.2.1",
     "prettier": "^2.1.2",
     "reflect-metadata": "^0.1.13",
@@ -64,7 +67,9 @@
   },
   "peerDependencies": {
     "@nestjs/common": "^7.0.0",
-    "@nestjs/core": "^7.0.0"
+    "@nestjs/core": "^7.0.0",
+    "joi": "^17.2.1",
+    "reflect-metadata": "^0.1.13"
   },
   "engines": {
     "node": ">= 10.13.0"
