@@ -3,13 +3,13 @@
 
 import Joi = require('joi');
 
-import { JoiPipe, JoiSchema, JoiValidationGroups } from '../../../src';
+import { CREATE, UPDATE, DEFAULT, JoiPipe, JoiSchema, JoiValidationGroups } from '../../../src';
 
 describe('request injection', () => {
   class metatype {
-    @JoiSchema(Joi.string())
-    @JoiSchema([JoiValidationGroups.CREATE], Joi.number())
-    @JoiSchema([JoiValidationGroups.UPDATE], Joi.symbol())
+    @JoiSchema([DEFAULT], Joi.string())
+    @JoiSchema([CREATE], Joi.number())
+    @JoiSchema([UPDATE], Joi.symbol())
     prop!: unknown;
   }
 

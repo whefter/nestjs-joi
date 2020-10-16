@@ -199,5 +199,14 @@ describe('JoiPipe', () => {
 
       expect(error).toBeUndefined();
     });
+
+    it('should not touch a payload if given nothing to construct a schema', async () => {
+      const pipe = new JoiPipe();
+
+      const payload = { prop: 'value' };
+
+      const returnVal = pipe.transform(payload, { type: 'query' });
+      expect(returnVal).toBe(payload);
+    });
   });
 });

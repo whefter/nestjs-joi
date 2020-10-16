@@ -96,6 +96,8 @@ export class JoiPipe implements PipeTransform {
       return payload;
     }
 
+    // console.log('schema', inspect(schema.describe(), undefined, 7));
+
     return JoiPipe.validate(payload, schema, metadata);
   }
 
@@ -198,7 +200,6 @@ export class JoiPipe implements PipeTransform {
     }
 
     const cacheKey = 'forced' + (forced ? '1' : '0') + (group ? 'group' + String(group) : '');
-
     // Check cache.
     if (this.typeSchemaMap.has(type)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -246,9 +247,7 @@ export class JoiPipe implements PipeTransform {
           protoOptions = optionsMeta.get(JoiValidationGroups.DEFAULT)!;
         }
 
-        if (protoOptions) {
-          Object.assign(options, protoOptions);
-        }
+        Object.assign(options, protoOptions);
       }
 
       // Check for property information on proto
@@ -264,12 +263,13 @@ export class JoiPipe implements PipeTransform {
         // Ignore property if not part of designated validation group
         let schemaOrType: Joi.Schema | Constructor | Constructor[];
         let schemaFn: SchemaCustomizerFn | undefined;
+        let schemaArrayFn: SchemaCustomizerFn | undefined | null;
         if (propMeta && group && propMeta.has(group)) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          ({ schemaOrType, schemaFn } = propMeta.get(group)!);
+          ({ schemaOrType, schemaFn, schemaArrayFn } = propMeta.get(group)!);
         } else if (propMeta && propMeta.has(JoiValidationGroups.DEFAULT)) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          ({ schemaOrType, schemaFn } = propMeta.get(JoiValidationGroups.DEFAULT)!);
+          ({ schemaOrType, schemaFn, schemaArrayFn } = propMeta.get(JoiValidationGroups.DEFAULT)!);
         } else {
           continue;
         }
@@ -283,15 +283,26 @@ export class JoiPipe implements PipeTransform {
             forced,
             group,
           }) as Joi.Schema;
-        } else if (schemaOrType instanceof Array) {
-          const schema = this.getTypeSchema(schemaOrType[0], {
-            forced,
-            group,
-          }) as Joi.Schema;
 
-          schemas[prop] = Joi.array().items(schema);
           if (schemaFn) {
             schemas[prop] = schemaFn(schemas[prop]);
+          }
+        } else {
+          /* istanbul ignore else */ // else case prevented by type checking on decorator
+          if (schemaOrType instanceof Array) {
+            let schema = this.getTypeSchema(schemaOrType[0], {
+              forced,
+              group,
+            }) as Joi.Schema;
+
+            if (schemaFn) {
+              schema = schemaFn(schema);
+            }
+
+            schemas[prop] = Joi.array().items(schema);
+            if (schemaArrayFn) {
+              schemas[prop] = schemaArrayFn(schemas[prop]);
+            }
           }
         }
       }

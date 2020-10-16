@@ -20,6 +20,7 @@ export function JoiSchema(
 ): PropertyDecorator;
 export function JoiSchema(
   nestedTypeArray: Constructor[],
+  customizeArraySchemaFn?: SchemaCustomizerFn | null,
   customizeSchemaFn?: SchemaCustomizerFn,
 ): PropertyDecorator;
 export function JoiSchema(groups: JoiValidationGroup[], schema: Joi.Schema): PropertyDecorator;
@@ -31,11 +32,13 @@ export function JoiSchema(
 export function JoiSchema(
   groups: JoiValidationGroup[],
   nestedTypeArray: Constructor[],
+  customizeArraySchemaFn?: SchemaCustomizerFn | null,
   customizeSchemaFn?: SchemaCustomizerFn,
 ): PropertyDecorator;
 export function JoiSchema(...args: unknown[]): PropertyDecorator {
   let schema: Joi.Schema | undefined;
   let nestedType: Constructor | Constructor[] | undefined;
+  let customizeArraySchemaFn: SchemaCustomizerFn | undefined | null;
   let customizeSchemaFn: SchemaCustomizerFn | undefined;
   let groups: JoiValidationGroup[] = [];
 
@@ -43,9 +46,11 @@ export function JoiSchema(...args: unknown[]): PropertyDecorator {
     schema = args[0] as Joi.Schema;
   } else if (typeof args[0] === 'function') {
     nestedType = args[0] as Constructor;
+    customizeSchemaFn = args[1] as SchemaCustomizerFn | undefined;
   } else if (args[0] instanceof Array && !args[0].some(x => typeof x !== 'function')) {
     nestedType = args[0] as Constructor[];
-    customizeSchemaFn = args[1] as SchemaCustomizerFn | undefined;
+    customizeArraySchemaFn = args[1] as SchemaCustomizerFn | undefined | null;
+    customizeSchemaFn = args[2] as SchemaCustomizerFn | undefined;
   } else if (
     args[0] instanceof Array &&
     !args[0].some(x => !['string', 'symbol'].includes(typeof x))
@@ -56,9 +61,11 @@ export function JoiSchema(...args: unknown[]): PropertyDecorator {
       schema = args[1] as Joi.Schema;
     } else if (typeof args[1] === 'function') {
       nestedType = args[1] as Constructor;
+      customizeSchemaFn = args[2] as SchemaCustomizerFn | undefined;
     } else if (args[1] instanceof Array && !args[1].some(x => typeof x !== 'function')) {
       nestedType = args[1] as Constructor[];
-      customizeSchemaFn = args[2] as SchemaCustomizerFn | undefined;
+      customizeArraySchemaFn = args[2] as SchemaCustomizerFn | undefined;
+      customizeSchemaFn = args[3] as SchemaCustomizerFn | undefined;
     } else {
       throw new Error(`Invalid arguments.`);
     }
@@ -103,11 +110,15 @@ export function JoiSchema(...args: unknown[]): PropertyDecorator {
         propMeta.set(group, {
           schemaOrType: schema,
         });
-      } else if (nestedType) {
-        propMeta.set(group, {
-          schemaOrType: nestedType,
-          schemaFn: customizeSchemaFn,
-        });
+      } else {
+        /* istanbul ignore else */ // else case prevented by type checking on arguments
+        if (nestedType) {
+          propMeta.set(group, {
+            schemaOrType: nestedType,
+            schemaFn: customizeSchemaFn,
+            schemaArrayFn: customizeArraySchemaFn,
+          });
+        }
       }
     }
 

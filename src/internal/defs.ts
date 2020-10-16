@@ -28,5 +28,6 @@ export type PropertySchemaMetadata = Map<
   {
     schemaOrType: Joi.Schema | Constructor | Constructor[];
     schemaFn?: SchemaCustomizerFn;
+    schemaArrayFn?: SchemaCustomizerFn | null;
   }
 >;
