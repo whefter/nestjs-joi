@@ -1,4 +1,7 @@
-on: push
+on:
+  push:
+    branches:
+        - master
 
 jobs:
   build:
@@ -12,3 +15,7 @@ jobs:
           node-version: '12'
       - run: npm install
       - run: npm test
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
