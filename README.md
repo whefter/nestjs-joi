@@ -1,5 +1,10 @@
 # `nestjs-joi`
 
+<a href="https://www.npmjs.com/package/nestjs-joi" target="_blank"><img src="https://img.shields.io/npm/v/nestjs-joi.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/package/nestjs-joi" target="_blank"><img src="https://img.shields.io/npm/l/nestjs-joi.svg" alt="Package License" /></a>
+[![Coverage Status](https://coveralls.io/repos/github/whefter/nestjs-joi/badge.svg)](https://coveralls.io/github/whefter/nestjs-joi)
+![CI](https://github.com/whefter/nestjs-joi/workflows/CI/badge.svg)
+
 Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional
 decorator-based schema construction.
 
