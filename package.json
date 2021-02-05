@@ -36,7 +36,7 @@
     "@elunic/ecs-prettier": "^0.2.1",
     "@elunic/ecs-tsconfig": "^0.1.1",
     "@elunic/eslint-config-ecs": "^0.1.4",
-    "@nestjs/common": "^7.4.4",
+    "@nestjs/common": "^7.6.11",
     "@nestjs/core": "^7.4.4",
     "@nestjs/platform-express": "^7.4.4",
     "@nestjs/testing": "^7.4.4",
