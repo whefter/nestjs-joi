@@ -11,19 +11,9 @@ import {
   Scope,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { reverse } from 'lodash';
 
-import {
-  ClassOptionsMetadata,
-  Constructor,
-  JoiValidationGroup,
-  JoiValidationGroups,
-  OPTIONS_PROTO_KEY,
-  PropertySchemaMetadata,
-  SchemaCustomizerFn,
-  SCHEMA_PROP_KEY,
-  SCHEMA_PROTO_KEY,
-} from './defs';
+import { Constructor, JoiValidationGroup, JoiValidationGroups } from './defs';
+import { getTypeSchema } from './get-type-schema';
 
 interface JoiPipeOptions {
   group?: JoiValidationGroup;
@@ -175,10 +165,9 @@ export class JoiPipe implements PipeTransform {
   private static readonly typeSchemaMap = new Map<unknown, Map<string, Joi.Schema | undefined>>();
 
   /**
-   * Construct a schema based on a passed type (Constructor). Metadata set using
-   * the decorators for properties (schema keys) and class  (schema options) is
-   * be read from the whole prototype chain. The result is cached for better performance,
-   * using the type and options to construct a cache key.
+   * Obtain the type schema from getTypeSchema().
+   * The result is cached for better performance, using the type and options to
+   * construct a cache key.
    *
    * If no properties have been decorated in the whole chain, no schema
    * will be returned so as to not throw when inadvertently "validating" using
@@ -186,15 +175,18 @@ export class JoiPipe implements PipeTransform {
    * Returning a schema can be forced to cover cases when a type has been explicitely
    * passed to JoiPipe.
    *
-   * @param type
-   * @param forced
+   * @param type The type (decorated class constructor) to construct a schema from
+   * @param options An optional options object
+   * @param options.forced Force an empty schema to be returned even if no properties of the type have been decorated. (defaults to false)
+   * @param options.group An optional JoiValidationGroup to use during schema construction
    */
   private static getTypeSchema(
     type: Constructor,
     /* istanbul ignore next */
     { forced, group }: { forced?: boolean; group?: JoiValidationGroup } = {},
   ): Joi.Schema | undefined {
-    // Do not validate basic inbuilt types
+    // Do not validate basic inbuilt types. This is fast enough that we don't need
+    // to cache the result.
     if (type === String || type === Object || type === Number || type === Array) {
       return;
     }
@@ -211,118 +203,26 @@ export class JoiPipe implements PipeTransform {
       this.typeSchemaMap.set(type, new Map());
     }
 
-    const protoChain: Array<typeof Object.prototype> = [];
-
-    // Get all prototypes in the chain, resulting in an array with the prototype
-    // that is closest to Object as the last element
-    let currentProto = type.prototype;
-    do {
-      protoChain.push(currentProto);
-      currentProto = Object.getPrototypeOf(currentProto);
-    } while (currentProto !== Object.prototype);
-
-    // Loop through all prototypes to get their property schemas, beginning with
-    // the one closest to Object, so that parent property schemas get overridden
-    // by child property schemas.
-    // Schema options are also assigned in that order.
-    const props: string[] = [];
-    const schemas: { [key: string]: Joi.Schema } = {};
-    const options: Joi.ValidationOptions = {};
-    for (const proto of reverse(protoChain)) {
-      // Check for options information on proto
-      const optionsMeta: ClassOptionsMetadata | undefined = Reflect.getOwnMetadata(
-        OPTIONS_PROTO_KEY,
-        proto.constructor,
-      );
-      // Decorator was used to specify options on this proto
-      if (optionsMeta) {
-        let protoOptions: Joi.ValidationOptions = {};
-        if (group) {
-          if (optionsMeta.has(group)) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            protoOptions = optionsMeta.get(group)!;
-          }
-        } else if (optionsMeta.has(JoiValidationGroups.DEFAULT)) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          protoOptions = optionsMeta.get(JoiValidationGroups.DEFAULT)!;
-        }
-
-        Object.assign(options, protoOptions);
-      }
-
-      // Check for property information on proto
-      /* istanbul ignore next */
-      const protoProps: string[] = Reflect.getOwnMetadata(SCHEMA_PROTO_KEY, proto) || [];
-      for (const prop of protoProps) {
-        const propMeta: PropertySchemaMetadata = Reflect.getOwnMetadata(
-          SCHEMA_PROP_KEY,
-          proto,
-          prop,
-        );
-
-        // Ignore property if not part of designated validation group
-        let schemaOrType: Joi.Schema | Constructor | Constructor[];
-        let schemaFn: SchemaCustomizerFn | undefined;
-        let schemaArrayFn: SchemaCustomizerFn | undefined | null;
-        if (propMeta && group && propMeta.has(group)) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          ({ schemaOrType, schemaFn, schemaArrayFn } = propMeta.get(group)!);
-        } else if (propMeta && propMeta.has(JoiValidationGroups.DEFAULT)) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          ({ schemaOrType, schemaFn, schemaArrayFn } = propMeta.get(JoiValidationGroups.DEFAULT)!);
-        } else {
-          continue;
-        }
-
-        props.push(prop);
-
-        if (Joi.isSchema(schemaOrType)) {
-          schemas[prop] = schemaOrType as Joi.Schema;
-        } else if (typeof schemaOrType === 'function') {
-          schemas[prop] = this.getTypeSchema(schemaOrType as Constructor, {
-            forced,
-            group,
-          }) as Joi.Schema;
-
-          if (schemaFn) {
-            schemas[prop] = schemaFn(schemas[prop]);
-          }
-        } else {
-          /* istanbul ignore else */ // else case prevented by type checking on decorator
-          if (schemaOrType instanceof Array) {
-            let schema = this.getTypeSchema(schemaOrType[0], {
-              forced,
-              group,
-            }) as Joi.Schema;
-
-            if (schemaFn) {
-              schema = schemaFn(schema);
-            }
-
-            schemas[prop] = Joi.array().items(schema);
-            if (schemaArrayFn) {
-              schemas[prop] = schemaArrayFn(schemas[prop]);
-            }
-          }
-        }
-      }
-    }
+    const typeSchema = getTypeSchema(type, { group });
 
     // The default behavior when no properties have attached schemas is to not
     // validate, otherwise we'd get errors for types with no decorators not intended
     // to be validated when used as global pipe
-    if (!props.length && !forced) {
+    if ((!typeSchema || !Object.keys(typeSchema.describe().keys).length) && !forced) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.typeSchemaMap.get(type)!.set(cacheKey, undefined);
       return undefined;
     }
 
-    const fullSchema = Joi.object().keys(schemas).required().options(options);
+    // It is assumed that a validation schema was specified because the input value
+    // as such is actually required, so we're calling required() here.
+    // This might be subject to change if actual use cases are found.
+    const finalSchema = typeSchema.required();
 
     // Cache value
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.typeSchemaMap.get(type)!.set(cacheKey, fullSchema);
+    this.typeSchemaMap.get(type)!.set(cacheKey, finalSchema);
 
-    return fullSchema;
+    return finalSchema;
   }
 }

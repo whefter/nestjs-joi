@@ -6,109 +6,20 @@ import { fromPairs } from 'lodash';
 
 import { JoiPipe, JoiSchema, JoiSchemaOptions, JoiValidationGroups } from '../../../src';
 import { Constructor } from '../../../src/internal/defs';
-
-class EmptyType {}
-
-@JoiSchemaOptions({
-  allowUnknown: false,
-})
-class BasicType {
-  // No default group
-  @JoiSchema(['group0'], Joi.string().valid('basic_prop0_group0').required())
-  prop0!: unknown;
-
-  @JoiSchema(Joi.string().valid('basic_prop1').required())
-  @JoiSchema(['group1'], Joi.string().valid('basic_prop1_group1').required())
-  prop1!: unknown;
-
-  @JoiSchema(Joi.string().valid('basic_prop2').required())
-  @JoiSchema(['group1'], Joi.string().valid('basic_prop2_group1').required())
-  prop2!: unknown;
-}
-
-class ExtendedType extends BasicType {
-  @JoiSchema(Joi.string().valid('extended_prop2').required())
-  @JoiSchema(['group1'], Joi.string().valid('extended_prop2_group1').required())
-  prop2!: unknown;
-
-  @JoiSchema(Joi.string().valid('extended_extendedProp').required())
-  @JoiSchema(['group1'], Joi.string().valid('extended_extendedProp_group1').required())
-  extendedProp!: string;
-}
-
-class TypeWithNestedType {
-  prop0!: unknown;
-
-  @JoiSchema(Joi.string().valid('nested_prop1').required())
-  @JoiSchema(['group1'], Joi.string().valid('nested_prop1_group1').required())
-  prop1!: unknown;
-
-  @JoiSchema(BasicType)
-  @JoiSchema(['group1'], ExtendedType)
-  nestedProp!: unknown;
-}
-
-class TypeWithNestedTypeArray {
-  prop0!: unknown;
-
-  @JoiSchema(Joi.string().valid('nested_array_prop1').required())
-  @JoiSchema(['group1'], Joi.string().valid('nested_array_prop1_group1').required())
-  prop1!: unknown;
-
-  @JoiSchema([BasicType])
-  @JoiSchema(['group1'], [ExtendedType])
-  nestedProp!: unknown;
-}
-
-class TypeWithNestedTypeAndCustomizer {
-  @JoiSchema(BasicType, schema => schema.optional())
-  @JoiSchema(['group1'], BasicType, schema => schema.required())
-  nestedProp!: unknown;
-}
-
-class TypeWithNestedTypeArrayAndArrayCustomizer {
-  @JoiSchema([BasicType], schema => schema.optional())
-  @JoiSchema(['group1'], [BasicType], schema => schema.required())
-  nestedProp!: unknown;
-}
-
-class TypeWithNestedTypeArrayAndCustomizer {
-  @JoiSchema([BasicType], schema => schema.required(), schema => schema.optional())
-  @JoiSchema(['group1'], [BasicType], schema => schema.required(), schema => schema.required())
-  nestedProp!: unknown;
-}
-
-@JoiSchemaOptions({
-  allowUnknown: false,
-})
-@JoiSchemaOptions(['group1'], {
-  allowUnknown: true,
-})
-class BasicTypeWithOptions {
-  @JoiSchema(Joi.string().valid('basicwithoptions_prop').required())
-  prop!: unknown;
-}
-
-@JoiSchemaOptions({
-  allowUnknown: true,
-})
-@JoiSchemaOptions(['group1'], {
-  allowUnknown: false,
-})
-class ExtendedTypeWithOptions extends BasicTypeWithOptions {}
-
-@JoiSchemaOptions(['group1'], {
-  abortEarly: true,
-})
-class BasicTypeWithNoDefaultOptions {
-  @JoiSchema(Joi.string().valid('basicwithnodefaultoptions_prop1').required())
-  @JoiSchema(['group1'], Joi.string().valid('basicwithnodefaultoptions_prop1_group1').required())
-  prop1!: unknown;
-
-  @JoiSchema(Joi.string().valid('basicwithnodefaultoptions_prop2').required())
-  @JoiSchema(['group1'], Joi.string().valid('basicwithnodefaultoptions_prop2_group1').required())
-  prop2!: unknown;
-}
+import {
+  BasicType,
+  ExtendedTypeWithOptions,
+  BasicTypeWithNoDefaultOptions,
+  TypeWithNestedType,
+  TypeWithNestedTypeArray,
+  TypeWithNestedTypeAndCustomizer,
+  TypeWithNestedTypeArrayAndArrayCustomizer,
+  TypeWithNestedTypeArrayAndCustomizer,
+  EmptyType,
+  ExtendedType,
+  BasicTypeWithOptions,
+  AdvancedType,
+} from '../fixtures';
 
 describe('basic integration', () => {
   describe('with schema as argument', () => {
@@ -212,6 +123,13 @@ describe('basic integration', () => {
       notExpectErrors: string[];
     };
   } = {
+    'schema constructed from empty type': {
+      type: EmptyType,
+      opts: {},
+      payload: {},
+      expectErrors: [],
+      notExpectErrors: [],
+    },
     'schema constructed from basic type': {
       type: BasicType,
       opts: {},
@@ -272,6 +190,42 @@ describe('basic integration', () => {
         '"extendedProp" must be [extended_extendedProp_group1]',
       ],
       notExpectErrors: ['"prop0"'],
+    },
+    'schema constructed from advanced type (positive, alternative 1)': {
+      type: AdvancedType,
+      opts: {},
+      payload: {
+        prop: {
+          prop1: 'basic_prop1',
+          prop2: 'basic_prop2',
+        },
+      },
+      expectErrors: [],
+      notExpectErrors: ['"prop"'],
+    },
+    'schema constructed from advanced type (positive, alternative 2)': {
+      type: AdvancedType,
+      opts: {},
+      payload: {
+        prop: {
+          prop1: 'basic_prop1',
+          prop2: 'extended_prop2',
+          extendedProp: 'extended_extendedProp',
+        },
+      },
+      expectErrors: [],
+      notExpectErrors: ['"prop"'],
+    },
+    'schema constructed from advanced type (negative)': {
+      type: AdvancedType,
+      opts: {},
+      payload: {
+        prop: {
+          prop1: 'basic_prop1',
+        },
+      },
+      expectErrors: ['"prop" does not match any of the allowed types'],
+      notExpectErrors: [],
     },
     'schema constructed from basic type with options': {
       type: BasicTypeWithOptions,

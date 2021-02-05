@@ -34,6 +34,7 @@ decorator-based schema construction.
     - [Built-in groups: `DEFAULT`, `CREATE`, `UPDATE`](#built-in-groups-default-create-update)
   - [`JoiPipeModule`](#joipipemodule)
   - [Class inheritance](#class-inheritance)
+  - [`getTypeSchema(type)`](#gettypeschematype)
 
 # Installation
 
@@ -515,4 +516,29 @@ Joi.object()
   .options({
     allowUnknown: true,
   });
+```
+
+## `getTypeSchema(type)`
+
+This function can be called to obtain the `Joi` schema constructed from
+`type`. This is the function used internally by `JoiPipe` when it is called
+with an explicit/implicit type/metatype.
+
+This function makes possible advanced uses such as the following:
+
+```typescript
+class ThrillerDto {
+  @JoiSchema(Joi.number().required())
+  thrill!: number;
+}
+
+class RomanceDto {
+  @JoiSchema(Joi.number().optional())
+  romance?: number;
+}
+
+class AuthorDto {
+  @JoiSchema(Joi.alternatives(getTypeSchema(ThrillerDto), getTypeSchema(RomanceDto)))
+  booksRatings: ThrillerDto | RomanceDto;
+}
 ```
