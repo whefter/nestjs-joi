@@ -34,7 +34,7 @@ decorator-based schema construction.
     - [Built-in groups: `DEFAULT`, `CREATE`, `UPDATE`](#built-in-groups-default-create-update)
   - [`JoiPipeModule`](#joipipemodule)
   - [Class inheritance](#class-inheritance)
-  - [`getTypeSchema(type)`](#gettypeschematype)
+  - [`getTypeSchema(type, opts?: { group? })`](#gettypeschematype-opts--group-)
 
 # Installation
 
@@ -518,11 +518,14 @@ Joi.object()
   });
 ```
 
-## `getTypeSchema(type)`
+## `getTypeSchema(type, opts?: { group? })`
 
 This function can be called to obtain the `Joi` schema constructed from
 `type`. This is the function used internally by `JoiPipe` when it is called
-with an explicit/implicit type/metatype.
+with an explicit/implicit type/metatype. Nothing is cached.
+
+A group can be passed to construct the schema for a specific
+group (together with the groups specified in `@JoiSchema()` etc.).
 
 This function makes possible advanced uses such as the following:
 
