@@ -30,6 +30,7 @@ decorator-based schema construction.
   - [`@JoiSchemaOptions()` class decorator](#joischemaoptions-class-decorator)
     - [`@JoiSchemaOptions(Joi.Options)`](#joischemaoptionsjoioptions)
     - [`@JoiSchemaOptions(groups[], Joi.options)`](#joischemaoptionsgroups-joioptions)
+  - [`@JoiSchemaExtends(type)` class decorator](#joischemaextendstype-class-decorator)
   - [Validation groups](#validation-groups)
     - [Built-in groups: `DEFAULT`, `CREATE`, `UPDATE`](#built-in-groups-default-create-update)
   - [`JoiPipeModule`](#joipipemodule)
@@ -407,6 +408,62 @@ class BookDto {
   @JoiSchema([JoiValidationGroups.CREATE], Joi.string().optional())
   name?: string;
 }
+```
+
+## `@JoiSchemaExtends(type)` class decorator
+
+Specify an alternative extended class for schema construction.
+`type` must be a class constructor.
+
+This decorator is useful for cases where the actual parent class in the prototype chain
+is not the class that has been decorated with `@JoiSchema()` etc., possibly as
+a result of some other transformation, as with `@nestjs/graphql`'s `OmitType()`.
+
+The following example illustrates the behavior:
+
+```typescript
+// Given this parent class
+class BookDto {
+  @JoiSchema(Joi.string().required())
+  name!: string;
+}
+
+// These two examples generate the same schema (containing both name and thrill keys)
+// 1.
+class ThrillerDto extends BookDto {
+  @JoiSchema(Joi.number().optional())
+  thrill?: number;
+}
+// 2.
+@JoiSchemaExtends(BookDto)
+class ThrillerDto {
+  @JoiSchema(Joi.number().optional())
+  thrill?: number;
+}
+```
+
+For an actual use case, consider the following example for a `@nestjs/graphql`
+`InputType`, where `OmitType()` creates a new internal class on which it tacks
+on all the properties from `Book`, but without applying any decorators.
+Without `@JoiSchemaExtends()`, no decorated properties from `Book` would be
+present in the final schema:
+
+```typescript
+// Does not work as expected
+@InputType()
+export class CreateBookInput extends OmitType(Book, ['id'], InputType) {
+  @JoiSchema(Joi.string())
+  @Field()
+  extraArg?: string;
+}
+
+// Works as expected
+@InputType()
+@JoiSchemaExtends(Book)
+export class CreateBookInput extends OmitType(Book, ['id'], InputType) {
+  @JoiSchema(Joi.string())
+  @Field()
+  extraArg?: string;
 ```
 
 ## Validation groups

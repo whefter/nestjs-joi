@@ -31,3 +31,5 @@ export type PropertySchemaMetadata = Map<
     schemaArrayFn?: SchemaCustomizerFn | null;
   }
 >;
+
+export const EXTENDS_PROTO_KEY = Symbol('JOIPIPE_EXTENDS_PROTO_KEY');

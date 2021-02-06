@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 
-import { getTypeSchema, JoiSchema, JoiSchemaOptions } from '../../src';
+import { getTypeSchema, JoiSchema, JoiSchemaOptions, JoiSchemaExtends } from '../../src';
 
 export class EmptyType {}
 
@@ -28,6 +28,17 @@ export class ExtendedType extends BasicType {
 
   @JoiSchema(Joi.string().valid('extended_extendedProp').required())
   @JoiSchema(['group1'], Joi.string().valid('extended_extendedProp_group1').required())
+  extendedProp!: string;
+}
+
+@JoiSchemaExtends(BasicType)
+export class DecoratorExtendedType {
+  @JoiSchema(Joi.string().valid('decorator_extended_prop2').required())
+  @JoiSchema(['group1'], Joi.string().valid('decorator_extended_prop2_group1').required())
+  prop2!: unknown;
+
+  @JoiSchema(Joi.string().valid('decorator_extended_extendedProp').required())
+  @JoiSchema(['group1'], Joi.string().valid('decorator_extended_extendedProp_group1').required())
   extendedProp!: string;
 }
 
@@ -96,6 +107,15 @@ export class BasicTypeWithOptions {
   allowUnknown: false,
 })
 export class ExtendedTypeWithOptions extends BasicTypeWithOptions {}
+
+@JoiSchemaOptions({
+  allowUnknown: true,
+})
+@JoiSchemaOptions(['group1'], {
+  allowUnknown: false,
+})
+@JoiSchemaExtends(BasicTypeWithOptions)
+export class DecoratorExtendedTypeWithOptions {}
 
 @JoiSchemaOptions(['group1'], {
   abortEarly: true,

@@ -4,6 +4,7 @@ import { reverse } from 'lodash';
 import {
   ClassOptionsMetadata,
   Constructor,
+  EXTENDS_PROTO_KEY,
   JoiValidationGroup,
   JoiValidationGroups,
   OPTIONS_PROTO_KEY,
@@ -15,12 +16,14 @@ import {
 
 /**
  * Construct a schema based on a passed type (Constructor). Metadata set using
- * the decorators for properties (schema keys) and class  (schema options) is
- * be read from the whole prototype chain.
+ * the decorators for properties (schema keys) and class (schema options) is
+ * read from the whole prototype chain, up to and excluding Object.
+ * If a prototype along the chain parent via decorator, that prototype
+ * chain will be followed instead from that point on.
  *
  * Creating a schema from a type with no decorated properties might result
  * in a schema that only allows empty objects, depending on the value of
- * the allowUnknown setting
+ * the allowUnknown setting.
  *
  * @param type The type (decorated class constructor) to construct a schema from
  * @param options An optional options object
@@ -34,11 +37,21 @@ export function getTypeSchema(
   const protoChain: Array<typeof Object.prototype> = [];
 
   // Get all prototypes in the chain, resulting in an array with the prototype
-  // that is closest to Object as the last element
+  // that is closest to Object as the last element. For each step, check if an
+  // alternative parent was specified via decorator; if so, use that parent instead.
   let currentProto = type.prototype;
   do {
     protoChain.push(currentProto);
-    currentProto = Object.getPrototypeOf(currentProto);
+
+    const extendsMeta: Constructor | undefined = Reflect.getOwnMetadata(
+      EXTENDS_PROTO_KEY,
+      currentProto.constructor,
+    );
+    if (extendsMeta) {
+      currentProto = extendsMeta.prototype;
+    } else {
+      currentProto = Object.getPrototypeOf(currentProto);
+    }
   } while (currentProto !== Object.prototype);
 
   // Loop through all prototypes to get their property schemas, beginning with

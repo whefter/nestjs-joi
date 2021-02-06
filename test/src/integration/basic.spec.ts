@@ -19,6 +19,8 @@ import {
   ExtendedType,
   BasicTypeWithOptions,
   AdvancedType,
+  DecoratorExtendedType,
+  DecoratorExtendedTypeWithOptions,
 } from '../fixtures';
 
 describe('basic integration', () => {
@@ -153,6 +155,20 @@ describe('basic integration', () => {
       ],
       notExpectErrors: ['"prop0"'],
     },
+    'schema constructed from decorator-extended type': {
+      type: DecoratorExtendedType,
+      opts: {},
+      payload: {
+        prop1: 'foo',
+        prop2: 'foo',
+      },
+      expectErrors: [
+        '"prop1" must be [basic_prop1]',
+        '"prop2" must be [decorator_extended_prop2]',
+        '"extendedProp" is required',
+      ],
+      notExpectErrors: ['"prop0"'],
+    },
     'schema constructed from basic type, respecting groups': {
       type: BasicType,
       opts: { group: 'group1' },
@@ -188,6 +204,21 @@ describe('basic integration', () => {
         '"prop1" must be [basic_prop1_group1]',
         '"prop2" must be [extended_prop2_group1]',
         '"extendedProp" must be [extended_extendedProp_group1]',
+      ],
+      notExpectErrors: ['"prop0"'],
+    },
+    'schema constructed from decorator-extended type, respecting groups': {
+      type: DecoratorExtendedType,
+      opts: { group: 'group1' },
+      payload: {
+        prop1: 'foo',
+        prop2: 'foo',
+        extendedProp: 'foo',
+      },
+      expectErrors: [
+        '"prop1" must be [basic_prop1_group1]',
+        '"prop2" must be [decorator_extended_prop2_group1]',
+        '"extendedProp" must be [decorator_extended_extendedProp_group1]',
       ],
       notExpectErrors: ['"prop0"'],
     },
@@ -247,6 +278,16 @@ describe('basic integration', () => {
       expectErrors: [],
       notExpectErrors: [],
     },
+    'schema constructed from decorator-extended type with options': {
+      type: DecoratorExtendedTypeWithOptions,
+      opts: {},
+      payload: {
+        prop: 'basicwithoptions_prop',
+        unknownProp: 'string',
+      },
+      expectErrors: [],
+      notExpectErrors: [],
+    },
     'schema constructed from basic type with options, respecting groups': {
       type: BasicTypeWithOptions,
       opts: { group: 'group1' },
@@ -259,6 +300,16 @@ describe('basic integration', () => {
     },
     'schema constructed from extended type with options, respecting groups': {
       type: ExtendedTypeWithOptions,
+      opts: { group: 'group1' },
+      payload: {
+        prop: 'basicwithoptions_prop',
+        unknownProp: 'string',
+      },
+      expectErrors: ['"unknownProp" is not allowed'],
+      notExpectErrors: [],
+    },
+    'schema constructed from decorator-extended type with options, respecting groups': {
+      type: DecoratorExtendedTypeWithOptions,
       opts: { group: 'group1' },
       payload: {
         prop: 'basicwithoptions_prop',

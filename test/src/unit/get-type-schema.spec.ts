@@ -11,6 +11,8 @@ import {
   BasicType,
   BasicTypeWithNoDefaultOptions,
   BasicTypeWithOptions,
+  DecoratorExtendedType,
+  DecoratorExtendedTypeWithOptions,
   EmptyType,
   ExtendedType,
   ExtendedTypeWithOptions,
@@ -248,6 +250,129 @@ describe('getTypeSchema with', () => {
                 presence: 'required',
               },
               allow: ['extended_extendedProp_group1'],
+            },
+          },
+          preferences: {},
+        });
+      });
+    });
+  });
+
+  describe('DecoratorExtendedType', () => {
+    describe('with no group', () => {
+      it('should return the matching schema', async () => {
+        const schema = getTypeSchema(DecoratorExtendedType);
+
+        expect(schema.describe()).toEqual({
+          type: 'object',
+          keys: {
+            prop1: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['basic_prop1'],
+            },
+            prop2: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['decorator_extended_prop2'],
+            },
+            extendedProp: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['decorator_extended_extendedProp'],
+            },
+          },
+          preferences: {
+            allowUnknown: false,
+          },
+        });
+      });
+    });
+
+    describe('with group0', () => {
+      it('should return the matching schema', async () => {
+        const schema = getTypeSchema(DecoratorExtendedType, { group: 'group0' });
+
+        expect(schema.describe()).toEqual({
+          type: 'object',
+          keys: {
+            prop0: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['basic_prop0_group0'],
+            },
+            prop1: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['basic_prop1'],
+            },
+            prop2: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['decorator_extended_prop2'],
+            },
+            extendedProp: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['decorator_extended_extendedProp'],
+            },
+          },
+          preferences: {},
+        });
+      });
+    });
+
+    describe('with group1', () => {
+      it('should return the matching schema', async () => {
+        const schema = getTypeSchema(DecoratorExtendedType, { group: 'group1' });
+
+        expect(schema.describe()).toEqual({
+          type: 'object',
+          keys: {
+            prop1: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['basic_prop1_group1'],
+            },
+            prop2: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['decorator_extended_prop2_group1'],
+            },
+            extendedProp: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['decorator_extended_extendedProp_group1'],
             },
           },
           preferences: {},
@@ -885,6 +1010,54 @@ describe('getTypeSchema with', () => {
     describe('with group1', () => {
       it('should return the matching schema', async () => {
         const schema = getTypeSchema(ExtendedTypeWithOptions, { group: 'group1' });
+
+        expect(schema.describe()).toEqual({
+          type: 'object',
+          keys: {
+            prop: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['basicwithoptions_prop'],
+            },
+          },
+          preferences: {
+            allowUnknown: false,
+          },
+        });
+      });
+    });
+  });
+
+  describe('DecoratorExtendedTypeWithOptions', () => {
+    describe('with no group', () => {
+      it('should return the matching schema', async () => {
+        const schema = getTypeSchema(DecoratorExtendedTypeWithOptions);
+
+        expect(schema.describe()).toEqual({
+          type: 'object',
+          keys: {
+            prop: {
+              type: 'string',
+              flags: {
+                only: true,
+                presence: 'required',
+              },
+              allow: ['basicwithoptions_prop'],
+            },
+          },
+          preferences: {
+            allowUnknown: true,
+          },
+        });
+      });
+    });
+
+    describe('with group1', () => {
+      it('should return the matching schema', async () => {
+        const schema = getTypeSchema(DecoratorExtendedTypeWithOptions, { group: 'group1' });
 
         expect(schema.describe()).toEqual({
           type: 'object',
