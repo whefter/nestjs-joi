@@ -1,4 +1,5 @@
-# `nestjs-joi`
+`nestjs-joi`
+--
 
 <a href="https://www.npmjs.com/package/nestjs-joi" target="_blank"><img src="https://img.shields.io/npm/v/nestjs-joi.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/package/nestjs-joi" target="_blank"><img src="https://img.shields.io/npm/l/nestjs-joi.svg" alt="Package License" /></a>
@@ -8,10 +9,6 @@
 Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional
 decorator-based schema construction.
 
-# Table of contents
-
-- [`nestjs-joi`](#nestjs-joi)
-- [Table of contents](#table-of-contents)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Reference](#reference)
