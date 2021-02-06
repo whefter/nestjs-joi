@@ -11,6 +11,7 @@ decorator-based schema construction.
 
 - [Installation](#installation)
 - [Usage](#usage)
+  - [A note on `@nestjs/graphql`](#a-note-on-nestjsgraphql)
 - [Reference](#reference)
   - [`JoiPipe`](#joipipe)
     - [`new JoiPipe(pipeOpts?: { group })`](#new-joipipepipeopts--group-)
@@ -101,6 +102,24 @@ export class BookController {
 
 It is possible to use `JoiPipe` on its own, without including it as a global
 pipe. See below for a more complete documentation.
+
+## A note on `@nestjs/graphql`
+
+This module can be used with `@nestjs/graphql` by any of the usual methods that
+do not use injection-enabled mode
+(`useGlobalPipes()`, `@UsePipes()`, a pipe defined in `@Args()` etc.).
+It will automatically use the metatype defined in the mutation method parameters.
+
+**The exception** is the declaration through `APP_PIPE` in the module providers.
+Defined like this, the pipe will not trigger on mutations
+because `@nestjs/graphl` currently does not support request-scope enhancers, see
+https://github.com/nestjs/graphql/issues/325 for details.
+
+As a result, `JoiPipe` does not have access to the HTTP request method and cannot
+currently determine the `JoiValidationGroup` to be used.
+
+To work around the issue of `OmitType()` etc. breaking the inheritance chain
+for schema building, see `@JoiSchemaExtends()` below.
 
 # Reference
 
