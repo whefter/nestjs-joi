@@ -105,18 +105,22 @@ pipe. See below for a more complete documentation.
 
 ## A note on `@nestjs/graphql`
 
-This module can be used with `@nestjs/graphql` by any of the usual methods that
-do not use injection-enabled mode
-(`useGlobalPipes()`, `@UsePipes()`, a pipe defined in `@Args()` etc.).
-It will automatically use the metatype defined in the mutation method parameters.
+This module can be used with `@nestjs/graphql`, but with some caveats:
+1. passing `new JoiPipe()` to `useGlobalPipes()`, `@UsePipes()`, a pipe defined
+   in `@Args()` etc. works as expected.
+2. passing the `JoiPipe` constructor to `useGlobalPipes()`, `@UsePipes()`, `@Args()`
+   etc. does **not** respect the passed HTTP method, meaning that the `CREATE`,
+   `UPDATE` etc. groups will not be used automatically.
+   This limitation is due, to the best of understanding, to Apollo, the GraphQL
+   server used by `@nestjs/graphql`, which only processed GraphQL queries for if
+   they are sent as `GET` and `POST`.
+3. if `JoiPipe` is registered as a global pipe by defining an `APP_PIPE` provider,
+   then **JoiPipe will not be called for GraphQL requests** (see
+   https://github.com/nestjs/graphql/issues/325)
 
-**The exception** is the declaration through `APP_PIPE` in the module providers.
-Defined like this, the pipe will not trigger on mutations
-because `@nestjs/graphl` currently does not support request-scope enhancers, see
-https://github.com/nestjs/graphql/issues/325 for details.
-
-As a result, `JoiPipe` does not have access to the HTTP request method and cannot
-currently determine the `JoiValidationGroup` to be used.
+If you want to make sure a validation group is used for a specific resolver
+mutation, create a new pipe with  `new JoiPipe({group: 'yourgroup'})` and pass it
+to `@UsePipes()` or `@Args()`.
 
 To work around the issue of `OmitType()` etc. breaking the inheritance chain
 for schema building, see `@JoiSchemaExtends()` below.

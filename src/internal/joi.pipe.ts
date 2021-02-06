@@ -27,6 +27,16 @@ const DEFAULT_JOI_OPTS: Joi.ValidationOptions = {
   allowUnknown: true,
 };
 
+// TODO Check if there is a more efficient/reliable test for generic request objects
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isHttpRequest(req: any): req is { method: string } {
+  return req && 'method' in req;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isGraphQlRequest(req: any): req is { req: { method: string } } {
+  return req && 'req' in req && typeof req.req === 'object' && 'method' in req.req;
+}
+
 @Injectable({ scope: Scope.REQUEST })
 export class JoiPipe implements PipeTransform {
   private readonly schema?: Joi.Schema;
@@ -46,9 +56,14 @@ export class JoiPipe implements PipeTransform {
       // Test for an actual request object, which indicates we're in "injected" mode.
       // This is the case that requires the most performant handling, which is why it
       // should be the first branch.
-      // TODO Check if there is a more efficient/reliable test for generic request objects
-      if ('method' in (arg as {})) {
-        this.method = (arg as { method: string }).method.toUpperCase();
+      if (isHttpRequest(arg)) {
+        this.method = arg.method.toUpperCase();
+      } else if (isGraphQlRequest(arg)) {
+        // @nestjs/graphql, or rather apollo, only supports GET and POST.
+        // To provide a consistent experience without hard to understand behavior
+        // such as UPDATE group schemas being ignored, we will NOT set the method.
+        // JoiPipe will work for this case, but ignore the method.
+        // this.method = arg.req.method.toUpperCase();
       } else {
         // This is the "manually called constructor" case, where performance is
         // (ostensibly) not as big of a concern since manual JoiPipes will be
