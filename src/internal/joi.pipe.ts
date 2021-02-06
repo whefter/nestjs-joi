@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/unified-signatures */ // Unified signatures are harder to read
 
-import * as Joi from 'joi';
 import {
   ArgumentMetadata,
   BadRequestException,
@@ -11,6 +10,7 @@ import {
   Scope,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import * as Joi from 'joi';
 
 import { Constructor, JoiValidationGroup, JoiValidationGroups } from './defs';
 import { getTypeSchema } from './get-type-schema';

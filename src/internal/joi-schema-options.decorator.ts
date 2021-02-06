@@ -37,7 +37,7 @@ export function JoiSchemaOptions(...args: unknown[]): ClassDecorator {
     throw error;
   }
 
-  return function (target: Function): void {
+  return function (target: Parameters<ClassDecorator>[0]): void {
     // Get existing meta, if applicable, set options for each passed group,
     // throw if options for group already set
     const optionsMeta: ClassOptionsMetadata =

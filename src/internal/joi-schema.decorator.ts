@@ -8,9 +8,9 @@ import {
   JoiValidationGroup,
   JoiValidationGroups,
   PropertySchemaMetadata,
-  SchemaCustomizerFn,
   SCHEMA_PROP_KEY,
   SCHEMA_PROTO_KEY,
+  SchemaCustomizerFn,
 } from './defs';
 
 export function JoiSchema(schema: Joi.Schema): PropertyDecorator;

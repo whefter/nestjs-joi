@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 
-import { getTypeSchema, JoiSchema, JoiSchemaOptions, JoiSchemaExtends } from '../../src';
+import { getTypeSchema, JoiSchema, JoiSchemaExtends, JoiSchemaOptions } from '../../src';
 
 export class EmptyType {}
 

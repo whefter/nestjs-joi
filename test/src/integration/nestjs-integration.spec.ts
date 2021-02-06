@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable unused-imports/no-unused-vars-ts */
 
 import { Body, Controller, Get, INestApplication, Patch, Post, Put, Query } from '@nestjs/common';
-import { TestingModule, Test } from '@nestjs/testing';
-import * as request from 'supertest';
+import { Test, TestingModule } from '@nestjs/testing';
 import * as Joi from 'joi';
+import * as request from 'supertest';
 
 import { JoiPipe, JoiPipeModule, JoiSchema, JoiValidationGroups } from '../../../src';
 

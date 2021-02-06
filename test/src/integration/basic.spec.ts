@@ -1,26 +1,26 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable unused-imports/no-unused-vars-ts */
 
-import Joi = require('joi');
+import * as Joi from 'joi';
 import { fromPairs } from 'lodash';
 
-import { JoiPipe, JoiSchema, JoiSchemaOptions, JoiValidationGroups } from '../../../src';
+import { JoiPipe, JoiSchema } from '../../../src';
 import { Constructor } from '../../../src/internal/defs';
 import {
-  BasicType,
-  ExtendedTypeWithOptions,
-  BasicTypeWithNoDefaultOptions,
-  TypeWithNestedType,
-  TypeWithNestedTypeArray,
-  TypeWithNestedTypeAndCustomizer,
-  TypeWithNestedTypeArrayAndArrayCustomizer,
-  TypeWithNestedTypeArrayAndCustomizer,
-  EmptyType,
-  ExtendedType,
-  BasicTypeWithOptions,
   AdvancedType,
+  BasicType,
+  BasicTypeWithNoDefaultOptions,
+  BasicTypeWithOptions,
   DecoratorExtendedType,
   DecoratorExtendedTypeWithOptions,
+  EmptyType,
+  ExtendedType,
+  ExtendedTypeWithOptions,
+  TypeWithNestedType,
+  TypeWithNestedTypeAndCustomizer,
+  TypeWithNestedTypeArray,
+  TypeWithNestedTypeArrayAndArrayCustomizer,
+  TypeWithNestedTypeArrayAndCustomizer,
 } from '../fixtures';
 
 describe('basic integration', () => {

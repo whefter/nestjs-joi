@@ -11,7 +11,7 @@ export function JoiSchemaExtends(type: Constructor): ClassDecorator {
   // no influence over extended class but wants to specify a different parent class
   // for exactly that reason.
 
-  return function (target: Function): void {
+  return function (target: Parameters<ClassDecorator>[0]): void {
     // Get potential existing meta, throw if already set
     const extendsMeta: Constructor | undefined = Reflect.getOwnMetadata(EXTENDS_PROTO_KEY, target);
 

@@ -1,20 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable unused-imports/no-unused-vars-ts */
 
-import {
-  Body,
-  Controller,
-  Get,
-  INestApplication,
-  Module,
-  Patch,
-  Post,
-  Put,
-  UsePipes,
-} from '@nestjs/common';
-import { TestingModule, Test } from '@nestjs/testing';
-import * as request from 'supertest';
-import * as Joi from 'joi';
+import { INestApplication, UsePipes } from '@nestjs/common';
 import {
   Args,
   Field,
@@ -24,19 +11,14 @@ import {
   Mutation,
   ObjectType,
   OmitType,
-  PickType,
   Query,
   Resolver,
 } from '@nestjs/graphql';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as Joi from 'joi';
+import * as request from 'supertest';
 
-import {
-  CREATE,
-  JoiPipe,
-  JoiPipeModule,
-  JoiSchema,
-  JoiSchemaExtends,
-  JoiValidationGroups,
-} from '../../../src';
+import { CREATE, JoiPipe, JoiSchema, JoiSchemaExtends, JoiValidationGroups } from '../../../src';
 
 describe('NestJS GraphQL integration', () => {
   @ObjectType()

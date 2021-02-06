@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable unused-imports/no-unused-vars-ts */
 
-import Joi = require('joi');
+import * as Joi from 'joi';
 
-import { CREATE, UPDATE, DEFAULT, JoiPipe, JoiSchema, JoiValidationGroups } from '../../../src';
+import { CREATE, DEFAULT, JoiPipe, JoiSchema, UPDATE } from '../../../src';
 
 describe('request injection', () => {
   class metatype {
