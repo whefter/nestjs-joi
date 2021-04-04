@@ -1,7 +1,12 @@
-import { Global, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import { APP_PIPE } from '@nestjs/core';
 
-import { JoiPipe } from './joi.pipe';
+import { JOIPIPE_OPTIONS } from './defs';
+import { JoiPipe, JoiPipeOptions } from './joi.pipe';
+
+export interface JoiPipeModuleOptions {
+  pipeOpts?: JoiPipeOptions;
+}
 
 @Global()
 @Module({
@@ -15,4 +20,25 @@ import { JoiPipe } from './joi.pipe';
   ],
   exports: [],
 })
-export class JoiPipeModule {}
+export class JoiPipeModule {
+  static forRoot(options: JoiPipeModuleOptions = {}): DynamicModule {
+    const providers: Provider[] = [
+      {
+        provide: APP_PIPE,
+        useClass: JoiPipe,
+      },
+    ];
+
+    if (options.pipeOpts) {
+      providers.push({
+        provide: JOIPIPE_OPTIONS,
+        useValue: options.pipeOpts,
+      });
+    }
+
+    return {
+      module: JoiPipeModule,
+      providers,
+    };
+  }
+}

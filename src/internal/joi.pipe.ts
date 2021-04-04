@@ -11,16 +11,27 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import * as Joi from 'joi';
+import { SetRequired } from 'type-fest';
 
-import { Constructor, JoiValidationGroup, JoiValidationGroups } from './defs';
+import {
+  Constructor,
+  JOIPIPE_OPTIONS,
+  JoiPipeValidationException,
+  JoiValidationGroup,
+  JoiValidationGroups,
+} from './defs';
 import { getTypeSchema } from './get-type-schema';
 
-interface JoiPipeOptions {
+export interface JoiPipeOptions {
   group?: JoiValidationGroup;
+  usePipeValidationException?: boolean;
 }
-const JoiPipeOptionsSchema = Joi.object().keys({
-  group: Joi.alternatives(Joi.string(), Joi.symbol()).optional(),
-});
+type ValidatedJoiPipeOptions = SetRequired<JoiPipeOptions, 'usePipeValidationException'>;
+const DEFAULT_JOI_PIPE_OPTS: ValidatedJoiPipeOptions = {
+  group: undefined,
+  usePipeValidationException: false,
+};
+const JOI_PIPE_OPTS_KEYS = Object.keys(DEFAULT_JOI_PIPE_OPTS);
 
 const DEFAULT_JOI_OPTS: Joi.ValidationOptions = {
   abortEarly: false,
@@ -41,8 +52,8 @@ function isGraphQlRequest(req: any): req is { req: { method: string } } {
 export class JoiPipe implements PipeTransform {
   private readonly schema?: Joi.Schema;
   private readonly type?: Constructor;
-  private readonly group?: JoiValidationGroup;
   private readonly method?: string;
+  private readonly pipeOpts: ValidatedJoiPipeOptions;
 
   constructor();
   constructor(pipeOpts?: JoiPipeOptions);
@@ -50,7 +61,7 @@ export class JoiPipe implements PipeTransform {
   constructor(schema: Joi.Schema, pipeOpts?: JoiPipeOptions);
   constructor(
     @Inject(REQUEST) private readonly arg?: unknown,
-    @Optional() pipeOpts?: JoiPipeOptions,
+    @Optional() @Inject(JOIPIPE_OPTIONS) pipeOpts?: JoiPipeOptions,
   ) {
     if (arg) {
       // Test for an actual request object, which indicates we're in "injected" mode.
@@ -73,23 +84,15 @@ export class JoiPipe implements PipeTransform {
         } else if (typeof arg === 'function') {
           this.type = arg as Constructor;
         } else {
+          // Options passed as first parameter
           pipeOpts = arg as JoiPipeOptions;
         }
-
-        pipeOpts = pipeOpts || {};
-
-        try {
-          pipeOpts = Joi.attempt(pipeOpts, JoiPipeOptionsSchema.required()) as JoiPipeOptions;
-        } catch (error) {
-          error.message = `Invalid JoiPipeOptions: ${error.message}`;
-          throw error;
-        }
-
-        this.group = pipeOpts.group;
       }
     } else {
       // Called without arguments, do nothing
     }
+
+    this.pipeOpts = this.parseOptions(pipeOpts);
   }
 
   transform(payload: unknown, metadata: ArgumentMetadata): unknown {
@@ -101,9 +104,7 @@ export class JoiPipe implements PipeTransform {
       return payload;
     }
 
-    // console.log('schema', inspect(schema.describe(), undefined, 7));
-
-    return JoiPipe.validate(payload, schema, metadata);
+    return JoiPipe.validate(payload, schema, this.pipeOpts.usePipeValidationException, metadata);
   }
 
   // Called "validate" and NOT "transform", because that would make it match
@@ -112,6 +113,7 @@ export class JoiPipe implements PipeTransform {
   private static validate<T>(
     payload: unknown,
     schema: Joi.Schema,
+    usePipeValidationException: boolean,
     /* istanbul ignore next */
     metadata: ArgumentMetadata = { type: 'custom' },
   ): T {
@@ -125,15 +127,60 @@ export class JoiPipe implements PipeTransform {
     if (error) {
       // Provide a special response with reasons
       const reasons = error.details.map((detail: { message: string }) => detail.message).join(', ');
-      throw new BadRequestException(
+      const message =
         `Request validation of ${metadata.type} ` +
-          (metadata.data ? `item '${metadata.data}' ` : '') +
-          `failed, because: ${reasons}`,
-      );
+        (metadata.data ? `item '${metadata.data}' ` : '') +
+        `failed, because: ${reasons}`;
+      if (usePipeValidationException) {
+        throw new JoiPipeValidationException(message);
+      } else {
+        throw new BadRequestException(message);
+      }
     }
 
     // Everything is fine
     return value as T;
+  }
+
+  /**
+   * Efficient validation of pipeOpts
+   *
+   * @param pipeOpts Pipe options as passed in the constructor
+   * @returns Validated options with default values applied
+   */
+  private parseOptions(pipeOpts?: JoiPipeOptions): ValidatedJoiPipeOptions {
+    // Pass type arguments to force type validation of the function arguments.
+    pipeOpts = Object.assign<JoiPipeOptions, JoiPipeOptions>(
+      {
+        ...DEFAULT_JOI_PIPE_OPTS,
+      },
+      pipeOpts || {},
+    );
+
+    const errors: string[] = [];
+
+    const unknownKeys = Object.keys(pipeOpts).filter(k => !JOI_PIPE_OPTS_KEYS.includes(k));
+    if (unknownKeys.length) {
+      errors.push(`Unknown configuration keys: ${unknownKeys.join(', ')}`);
+    }
+    if (
+      pipeOpts.group &&
+      !(typeof pipeOpts.group === 'string' || typeof pipeOpts.group === 'symbol')
+    ) {
+      errors.push(`'group' must be a string or symbol`);
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(pipeOpts, 'usePipeValidationException') &&
+      !(typeof pipeOpts.usePipeValidationException === 'boolean')
+    ) {
+      errors.push(`'usePipeValidationException' must be a boolean`);
+    }
+
+    if (errors.length) {
+      throw new Error(`Invalid JoiPipeOptions:\n${errors.map(x => `- ${x}`).join('\n')}`);
+    }
+
+    return pipeOpts as ValidatedJoiPipeOptions;
   }
 
   /**
@@ -163,12 +210,12 @@ export class JoiPipe implements PipeTransform {
     // Prefer a static model, if specified
     if (this.type) {
       // Don't return "no schema" (undefined) if a type was explicitely specified
-      return JoiPipe.getTypeSchema(this.type, { forced: true, group: this.group });
+      return JoiPipe.getTypeSchema(this.type, { forced: true, group: this.pipeOpts.group });
     }
 
     // Determine the schema from the passed model
     if (metadata.metatype) {
-      return JoiPipe.getTypeSchema(metadata.metatype, { group: this.group });
+      return JoiPipe.getTypeSchema(metadata.metatype, { group: this.pipeOpts.group });
     }
 
     return undefined;

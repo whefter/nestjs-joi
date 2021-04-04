@@ -4,124 +4,58 @@
 import { BadRequestException } from '@nestjs/common';
 import * as Joi from 'joi';
 
-import { JoiPipe } from '../../../src';
+import { JoiPipe, JoiPipeValidationException } from '../../../src';
 
 describe('JoiPipe', () => {
   describe('arguments', () => {
-    it('should accept ()', () => {
-      let error;
-      try {
-        new JoiPipe();
-      } catch (error_) {
-        error = error_;
-      }
-
-      expect(error).toBeUndefined();
-    });
-
-    it('should accept (JoiPipeOptions)', () => {
-      let error;
-      try {
-        new JoiPipe({ group: 'group' });
-      } catch (error_) {
-        error = error_;
-      }
-
-      expect(error).toBeUndefined();
-    });
-
-    it('should reject (INVALID JoiPipeOptions)', () => {
-      try {
-        // @ts-ignore
-        new JoiPipe({ invalid: true });
-        throw new Error('should not be thrown');
-      } catch (error) {
-        expect(error.message).toContain('Invalid JoiPipeOptions');
-      }
-    });
-
-    it('should accept (ClassType)', () => {
-      class type {}
-
-      let error;
-      try {
-        new JoiPipe(type);
-      } catch (error_) {
-        error = error_;
-      }
-
-      expect(error).toBeUndefined();
-    });
-
-    it('should accept (ClassType, JoiPipeOptions)', () => {
-      class type {}
-
-      let error;
-      try {
-        new JoiPipe(type, { group: 'group' });
-      } catch (error_) {
-        error = error_;
-      }
-
-      expect(error).toBeUndefined();
-    });
-
-    it('should reject (ClassType, INVALID JoiPipeOptions)', () => {
-      class type {}
-
-      try {
-        // @ts-ignore
-        new JoiPipe(type, { invalid: true });
-        throw new Error('should not be thrown');
-      } catch (error) {
-        expect(error.message).toContain('Invalid JoiPipeOptions');
-      }
-    });
-
-    it('should accept (Joi.Schema)', () => {
-      let error;
-      try {
-        new JoiPipe(Joi.string());
-      } catch (error_) {
-        error = error_;
-      }
-
-      expect(error).toBeUndefined();
-    });
-
-    it('should accept (Joi.Schema, JoiPipeOptions)', () => {
-      let error;
-      try {
-        new JoiPipe(Joi.string(), { group: 'group' });
-      } catch (error_) {
-        error = error_;
-      }
-
-      expect(error).toBeUndefined();
-    });
-
-    it('should reject (Joi.Schema, INVALID JoiPipeOptions)', () => {
-      try {
-        // @ts-ignore
-        new JoiPipe(Joi.string(), { invalid: true });
-        throw new Error('should not be thrown');
-      } catch (error) {
-        expect(error.message).toContain('Invalid JoiPipeOptions');
-      }
-    });
-
-    it('should accept (Request)', () => {
-      let error;
-      try {
-        new JoiPipe({
+    function accept(what: string, ...args: unknown[]) {
+      it(`should accept (${what})`, () => {
+        let error;
+        try {
           // @ts-ignore
-          method: 'get',
-        });
-      } catch (error_) {
-        error = error_;
-      }
+          new JoiPipe(...args);
+        } catch (error_) {
+          error = error_;
+        }
 
-      expect(error).toBeUndefined();
+        expect(error).toBeUndefined();
+      });
+    }
+    function reject(what: string, withMessage: string, ...args: unknown[]) {
+      it(`should reject (${what})`, () => {
+        try {
+          // @ts-ignore
+          new JoiPipe(...args);
+          throw new Error('should not be thrown');
+        } catch (error) {
+          expect(error.message).toContain(withMessage);
+        }
+      });
+    }
+
+    class type {}
+
+    accept('');
+    accept('JoiPipeOptions', { group: 'group' });
+    reject('INVALID JoiPipeOptions', 'Invalid JoiPipeOptions', { invalid: true });
+    accept('ClassType', type);
+    accept('ClassType, JoiPipeOptions', type, { group: 'group' });
+    reject('ClassType, INVALID JoiPipeOptions', 'Invalid JoiPipeOptions', type, { invalid: true });
+    accept('Joi.Schema', Joi.string());
+    accept('Joi.Schema, JoiPipeOptions', Joi.string(), { group: 'group' });
+    reject('Joi.Schema, INVALID JoiPipeOptions', 'Invalid JoiPipeOptions', Joi.string(), {
+      invalid: true,
+    });
+    accept('Request', { method: 'get' });
+
+    describe('(pipe options)', () => {
+      accept('{ group: string }', { group: 'group' });
+      accept('{ group: symbol }', { group: Symbol('group') });
+      reject('{ group: boolean }', 'Invalid JoiPipeOptions', { group: true });
+      accept('{ usePipeValidationException: boolean }', { usePipeValidationException: true });
+      reject('{ usePipeValidationException: string }', 'Invalid JoiPipeOptions', {
+        usePipeValidationException: '1',
+      });
     });
   });
 
@@ -207,6 +141,39 @@ describe('JoiPipe', () => {
 
       const returnVal = pipe.transform(payload, { type: 'query' });
       expect(returnVal).toBe(payload);
+    });
+
+    it('should throw a Nest BadRequestException if not configured otherwise', async () => {
+      const pipe = new JoiPipe(Joi.string());
+
+      try {
+        pipe.transform(1, { type: 'query' });
+        throw new Error('should not be thrown');
+      } catch (error) {
+        expect(error instanceof BadRequestException).toBeTruthy();
+      }
+    });
+
+    it('should throw a Nest BadRequestException when configured explicitely', async () => {
+      const pipe = new JoiPipe(Joi.string(), { usePipeValidationException: false });
+
+      try {
+        pipe.transform(1, { type: 'query' });
+        throw new Error('should not be thrown');
+      } catch (error) {
+        expect(error instanceof BadRequestException).toBeTruthy();
+      }
+    });
+
+    it('should throw a JoiPipeValidationException when configured explicitely', async () => {
+      const pipe = new JoiPipe(Joi.string(), { usePipeValidationException: true });
+
+      try {
+        pipe.transform(1, { type: 'query' });
+        throw new Error('should not be thrown');
+      } catch (error) {
+        expect(error instanceof JoiPipeValidationException).toBeTruthy();
+      }
     });
   });
 });

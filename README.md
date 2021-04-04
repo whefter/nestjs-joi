@@ -13,10 +13,12 @@ Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional dec
   - [A note on `@nestjs/graphql`](#a-note-on-nestjsgraphql)
 - [Reference](#reference)
   - [`JoiPipe`](#joipipe)
-    - [`new JoiPipe(pipeOpts?: { group })`](#new-joipipepipeopts--group-)
-    - [`new JoiPipe(type, pipeOpts?: { group })`](#new-joipipetype-pipeopts--group-)
-    - [`new JoiPipe(joiSchema, pipeOpts?: { group })`](#new-joipipejoischema-pipeopts--group-)
+    - [`new JoiPipe(pipeOpts?)`](#new-joipipepipeopts)
+    - [`new JoiPipe(type, pipeOpts?)`](#new-joipipetype-pipeopts)
+    - [`new JoiPipe(joiSchema, pipeOpts?)`](#new-joipipejoischema-pipeopts)
+    - [Pipe options (`pipeOpts`)](#pipe-options-pipeopts)
     - [Injection-enabled mode: `JoiPipe` (`@Query(JoiPipe)`, `@Param(JoiPipe)`, ...)](#injection-enabled-mode-joipipe-queryjoipipe-paramjoipipe-)
+    - [Defining `pipeOpts` in injection-enabled mode](#defining-pipeopts-in-injection-enabled-mode)
   - [`@JoiSchema()` property decorator](#joischema-property-decorator)
     - [`@JoiSchema(joiSchema)`](#joischemajoischema)
     - [`@JoiSchema(groups[], joiSchema)`](#joischemagroups-joischema)
@@ -114,7 +116,7 @@ To work around the issue of `OmitType()` etc. breaking the inheritance chain for
 
 ## `JoiPipe`
 
-`JoiPipe` can be used either as a global pipe (see below for `JoiPipeModule`) or for specific requests inside the `@Param()`, `@Query` etc. Request decorators.
+`JoiPipe` can be used either as a global pipe (see below for [`JoiPipeModule`](#joipipemodule)) or for specific requests inside the `@Param()`, `@Query` etc. Request decorators.
 
 When used with the the Request decorators, there are two possibilities:
 
@@ -134,7 +136,7 @@ export class BookController {
 }
 ```
 
-### `new JoiPipe(pipeOpts?: { group })`
+### `new JoiPipe(pipeOpts?)`
 
 A `JoiPipe` that will handle payloads based on a schema determined by the passed `metatype`, if present.
 
@@ -148,7 +150,7 @@ If `group` is passed in the `pipeOpts`, only decorations specified for that grou
   }
 ```
 
-### `new JoiPipe(type, pipeOpts?: { group })`
+### `new JoiPipe(type, pipeOpts?)`
 
 A `JoiPipe` that will handle payloads based on the schema constructed from the passed `type`. This pipe will ignore the request `metatype`.
 
@@ -162,7 +164,7 @@ If `group` is passed in the `pipeOpts`, only decorations specified for that grou
   }
 ```
 
-### `new JoiPipe(joiSchema, pipeOpts?: { group })`
+### `new JoiPipe(joiSchema, pipeOpts?)`
 
 A `JoiPipe` that will handle payloads based on the schema passed in the constructor parameters. This pipe will ignore the request `metatype`.
 
@@ -175,6 +177,13 @@ If `group` is passed in the `pipeOpts`, only decorations specified for that grou
       return this.bookService.getBookById(bookId);
   }
 ```
+
+### Pipe options (`pipeOpts`)
+
+Currently, the following options are available:
+
+- `group` (`string | symbol`) When a `group` is defined,, only decorators specified for that group when declaring the schema will be used to construct the schema. **Default:** `undefined`
+- `usePipeValidationException` (`boolean`) By default, `JoiPipe` throws a NestJS `BadRequestException` when a validation error occurs. This results in a `400 Bad Request` response, which should be suitable to most cases. If you need to have a reliable way to catch the thrown error, for example in an exception filter, set this to `true` to throw a `JoiPipeValidationException` instead. **Default:** `false`
 
 ### Injection-enabled mode: `JoiPipe` (`@Query(JoiPipe)`, `@Param(JoiPipe)`, ...)
 
@@ -207,6 +216,33 @@ class BookController {
   }
 }
 ```
+
+### Defining `pipeOpts` in injection-enabled mode
+
+In injection-enabled mode, options cannot be passed to `JoiPipe` directly since the constructor is passed as an argument instead of an instance, which would accept the `pipeOpts` argument.
+
+Instead, the options can be defined by leveraging the DI mechanism itself to provide the options through a provider:
+
+```typescript
+@Module({
+  ...
+  controllers: [ControllerUsingJoiPipe],
+  providers: [
+    {
+      provide: JOIPIPE_OPTIONS,
+      useValue: {
+        usePipeValidationException: true,
+      },
+    },
+  ],
+  ...
+})
+export class AppModule {}
+```
+
+**Note**: the provider must be defined on the correct module to be "visible" in the DI context in which the `JoiPipe` is being injected. Alternatively, it can be defined and exported in a global module. See [the NestJS documentation for this](https://docs.nestjs.com/modules).
+
+For how to define options when using the `JoiPipeModule`, [refer to the section on `JoiPipeModule` below](#joipipemodule).
 
 ## `@JoiSchema()` property decorator
 
@@ -476,12 +512,9 @@ import { JoiPipeModule } from 'nestjs-joi';
   imports: [JoiPipeModule],
 })
 export class AppModule {}
-```
 
-This is equivalent to:
-**Example**
-
-```typescript
+//
+// Equivalent to:
 import { JoiPipe } from 'nestjs-joi';
 
 @Module({
@@ -490,6 +523,45 @@ import { JoiPipe } from 'nestjs-joi';
     {
       provide: APP_PIPE,
       useClass: JoiPipe,
+    },
+  ],
+})
+export class AppModule {}
+```
+
+Pipe options (`pipeOpts`) can be passed by using `JoiPipeModule.forRoot()`:
+
+```typescript
+import { JoiPipeModule } from 'nestjs-joi';
+
+@Module({
+  controllers: [BookController],
+  imports: [
+    JoiPipeModule.forRoot({
+      pipeOpts: {
+        usePipeValidationException: true,
+      },
+    }),
+  ],
+})
+export class AppModule {}
+
+//
+// Equivalent to:
+import { JoiPipe } from 'nestjs-joi';
+
+@Module({
+  controllers: [BookController],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useClass: JoiPipe,
+    },
+    {
+      provide: JOIPIPE_OPTIONS,
+      useValue: {
+        usePipeValidationException: true,
+      },
     },
   ],
 })

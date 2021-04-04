@@ -33,3 +33,6 @@ export type PropertySchemaMetadata = Map<
 >;
 
 export const EXTENDS_PROTO_KEY = Symbol('JOIPIPE_EXTENDS_PROTO_KEY');
+
+export const JOIPIPE_OPTIONS = Symbol('JOIPIPE_OPTIONS');
+export class JoiPipeValidationException extends Error {}
