@@ -175,5 +175,19 @@ describe('JoiPipe', () => {
         expect(error instanceof JoiPipeValidationException).toBeTruthy();
       }
     });
+
+    it('should throw a custom error defined in the schema', async () => {
+      class CustomError extends Error {}
+
+      const pipe = new JoiPipe(Joi.string().alphanum().error(new CustomError('custom message')));
+
+      try {
+        pipe.transform('-', { type: 'query' });
+        throw new Error('should not be thrown');
+      } catch (error) {
+        expect(error.message).toBe('custom message');
+        expect(error instanceof CustomError).toBeTruthy();
+      }
+    });
   });
 });

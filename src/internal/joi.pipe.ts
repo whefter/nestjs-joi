@@ -125,16 +125,25 @@ export class JoiPipe implements PipeTransform {
     );
 
     if (error) {
-      // Provide a special response with reasons
-      const reasons = error.details.map((detail: { message: string }) => detail.message).join(', ');
-      const message =
-        `Request validation of ${metadata.type} ` +
-        (metadata.data ? `item '${metadata.data}' ` : '') +
-        `failed, because: ${reasons}`;
-      if (usePipeValidationException) {
-        throw new JoiPipeValidationException(message);
+      // Fixes #4
+      if (Joi.isError(error)) {
+        // Provide a special response with reasons
+        const reasons = error.details
+          .map((detail: { message: string }) => detail.message)
+          .join(', ');
+        const message =
+          `Request validation of ${metadata.type} ` +
+          (metadata.data ? `item '${metadata.data}' ` : '') +
+          `failed, because: ${reasons}`;
+        if (usePipeValidationException) {
+          throw new JoiPipeValidationException(message);
+        } else {
+          throw new BadRequestException(message);
+        }
       } else {
-        throw new BadRequestException(message);
+        // If error is not a validation error, it is probably a custom error thrown by the schema.
+        // Pass it through to allow it to be caught by custom error handlers.
+        throw error;
       }
     }
 

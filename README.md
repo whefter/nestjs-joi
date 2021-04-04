@@ -17,6 +17,7 @@ Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional dec
     - [`new JoiPipe(type, pipeOpts?)`](#new-joipipetype-pipeopts)
     - [`new JoiPipe(joiSchema, pipeOpts?)`](#new-joipipejoischema-pipeopts)
     - [Pipe options (`pipeOpts`)](#pipe-options-pipeopts)
+    - [Error handling and custom schema errors](#error-handling-and-custom-schema-errors)
     - [Injection-enabled mode: `JoiPipe` (`@Query(JoiPipe)`, `@Param(JoiPipe)`, ...)](#injection-enabled-mode-joipipe-queryjoipipe-paramjoipipe-)
     - [Defining `pipeOpts` in injection-enabled mode](#defining-pipeopts-in-injection-enabled-mode)
   - [`@JoiSchema()` property decorator](#joischema-property-decorator)
@@ -243,6 +244,26 @@ export class AppModule {}
 **Note**: the provider must be defined on the correct module to be "visible" in the DI context in which the `JoiPipe` is being injected. Alternatively, it can be defined and exported in a global module. See [the NestJS documentation for this](https://docs.nestjs.com/modules).
 
 For how to define options when using the `JoiPipeModule`, [refer to the section on `JoiPipeModule` below](#joipipemodule).
+
+### Error handling and custom schema errors
+
+As described in the [`pipeOpts`](#pipe-options-pipeopts), when a validation error occurs, `JoiPipe` throws a `BadRequestException` or a `JoiPipeValidationException` (if configured).
+
+If your schema defines a custom error, that error will be thrown instead:
+
+```typescript
+@JoiSchema(
+  Joi.string()
+    .required()
+    .alphanum()
+    .error(
+      new Error(
+        `prop must contain only alphanumeric characters`,
+      ),
+    ),
+)
+prop: string;
+```
 
 ## `@JoiSchema()` property decorator
 
