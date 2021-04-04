@@ -6,8 +6,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/whefter/nestjs-joi/badge.svg)](https://coveralls.io/github/whefter/nestjs-joi)
 ![CI](https://github.com/whefter/nestjs-joi/workflows/CI/badge.svg)
 
-Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional
-decorator-based schema construction.
+Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional decorator-based schema construction.
 
 - [Installation](#installation)
 - [Usage](#usage)
@@ -43,12 +42,9 @@ npm install --save nestjs-joi
 
 # Usage
 
-Annotate your type/DTO classes with property schemas and options, then set up
-your NestJS module to import `JoiPipeModule` to have your controller routes
-auto-validated everywhere the type/DTO class is used:
+Annotate your type/DTO classes with property schemas and options, then set up your NestJS module to import `JoiPipeModule` to have your controller routes auto-validated everywhere the type/DTO class is used:
 
-The built-in groups `CREATE` and `UPDATE` are available for `POST/PUT`
-and `PATCH`, respecitively.
+The built-in groups `CREATE` and `UPDATE` are available for `POST/PUT` and `PATCH`, respecitively.
 
 ```typescript
 import { JoiPipeModule, JoiSchema, JoiSchemaOptions, CREATE, UPDATE } from 'nestjs-joi';
@@ -100,49 +96,32 @@ export class BookController {
 }
 ```
 
-It is possible to use `JoiPipe` on its own, without including it as a global
-pipe. See below for a more complete documentation.
+It is possible to use `JoiPipe` on its own, without including it as a global pipe. See below for a more complete documentation.
 
 ## A note on `@nestjs/graphql`
 
 This module can be used with `@nestjs/graphql`, but with some caveats:
-1. passing `new JoiPipe()` to `useGlobalPipes()`, `@UsePipes()`, a pipe defined
-   in `@Args()` etc. works as expected.
-2. passing the `JoiPipe` constructor to `useGlobalPipes()`, `@UsePipes()`, `@Args()`
-   etc. does **not** respect the passed HTTP method, meaning that the `CREATE`,
-   `UPDATE` etc. groups will not be used automatically.
-   This limitation is due, to the best of understanding, to Apollo, the GraphQL
-   server used by `@nestjs/graphql`, which only processed GraphQL queries for if
-   they are sent as `GET` and `POST`.
-3. if `JoiPipe` is registered as a global pipe by defining an `APP_PIPE` provider,
-   then **JoiPipe will not be called for GraphQL requests** (see
-   https://github.com/nestjs/graphql/issues/325)
 
-If you want to make sure a validation group is used for a specific resolver
-mutation, create a new pipe with  `new JoiPipe({group: 'yourgroup'})` and pass it
-to `@UsePipes()` or `@Args()`.
+1. passing `new JoiPipe()` to `useGlobalPipes()`, `@UsePipes()`, a pipe defined in `@Args()` etc. works as expected.
+2. passing the `JoiPipe` constructor to `useGlobalPipes()`, `@UsePipes()`, `@Args()` etc. does **not** respect the passed HTTP method, meaning that the `CREATE`, `UPDATE` etc. groups will not be used automatically. This limitation is due, to the best of understanding, to Apollo, the GraphQL server used by `@nestjs/graphql`, which only processed GraphQL queries for if they are sent as `GET` and `POST`.
+3. if `JoiPipe` is registered as a global pipe by defining an `APP_PIPE` provider, then **JoiPipe will not be called for GraphQL requests** (see https://github.com/nestjs/graphql/issues/325)
 
-To work around the issue of `OmitType()` etc. breaking the inheritance chain
-for schema building, see `@JoiSchemaExtends()` below.
+If you want to make sure a validation group is used for a specific resolver mutation, create a new pipe with `new JoiPipe({group: 'yourgroup'})` and pass it to `@UsePipes()` or `@Args()`.
+
+To work around the issue of `OmitType()` etc. breaking the inheritance chain for schema building, see `@JoiSchemaExtends()` below.
 
 # Reference
 
 ## `JoiPipe`
 
-`JoiPipe` can be used either as a global pipe (see below for `JoiPipeModule`) or
-for specific requests inside the `@Param()`, `@Query` etc. Request decorators.
+`JoiPipe` can be used either as a global pipe (see below for `JoiPipeModule`) or for specific requests inside the `@Param()`, `@Query` etc. Request decorators.
 
 When used with the the Request decorators, there are two possibilities:
 
 - pass a configured `JoiPipe` instance
-- pass the `JoiPipe` constuctor itself to leverage the injection and built-in
-  group capabilities
+- pass the `JoiPipe` constuctor itself to leverage the injection and built-in group capabilities
 
-When handling a request, the `JoiPipe` instance will be provided by NestJS with
-the payload and, if present, the `metatype` (`BookDto` in the example below).
-The `metatype` is used to determine the schema that the payload is validated against,
-unless `JoiPipe` is instanciated with an explicit type or schema. This is done by
-evaluating metadata set on the `metatype`'s class properties, if present.
+When handling a request, the `JoiPipe` instance will be provided by NestJS with the payload and, if present, the `metatype` (`BookDto` in the example below). The `metatype` is used to determine the schema that the payload is validated against, unless `JoiPipe` is instanciated with an explicit type or schema. This is done by evaluating metadata set on the `metatype`'s class properties, if present.
 
 ```typescript
 @Controller('/books')
@@ -157,11 +136,9 @@ export class BookController {
 
 ### `new JoiPipe(pipeOpts?: { group })`
 
-A `JoiPipe` that will handle payloads based on a schema determined by the passed
-`metatype`, if present.
+A `JoiPipe` that will handle payloads based on a schema determined by the passed `metatype`, if present.
 
-If `group` is passed in the `pipeOpts`, only decorations specified for that group
-will be used to construct the schema.
+If `group` is passed in the `pipeOpts`, only decorations specified for that group will be used to construct the schema.
 
 ```typescript
   @Post('/')
@@ -173,11 +150,9 @@ will be used to construct the schema.
 
 ### `new JoiPipe(type, pipeOpts?: { group })`
 
-A `JoiPipe` that will handle payloads based on the schema constructed from the passed
-`type`. This pipe will ignore the request `metatype`.
+A `JoiPipe` that will handle payloads based on the schema constructed from the passed `type`. This pipe will ignore the request `metatype`.
 
-If `group` is passed in the `pipeOpts`, only decorations specified for that group
-will be used to construct the schema.
+If `group` is passed in the `pipeOpts`, only decorations specified for that group will be used to construct the schema.
 
 ```typescript
   @Post('/')
@@ -189,11 +164,9 @@ will be used to construct the schema.
 
 ### `new JoiPipe(joiSchema, pipeOpts?: { group })`
 
-A `JoiPipe` that will handle payloads based on the schema passed in the constructor
-parameters. This pipe will ignore the request `metatype`.
+A `JoiPipe` that will handle payloads based on the schema passed in the constructor parameters. This pipe will ignore the request `metatype`.
 
-If `group` is passed in the `pipeOpts`, only decorations specified for that group
-will be used to construct the schema.
+If `group` is passed in the `pipeOpts`, only decorations specified for that group will be used to construct the schema.
 
 ```typescript
   @Get('/:bookId')
@@ -205,12 +178,9 @@ will be used to construct the schema.
 
 ### Injection-enabled mode: `JoiPipe` (`@Query(JoiPipe)`, `@Param(JoiPipe)`, ...)
 
-Uses an injection-enabled `JoiPipe` which can look at the request to determine
-the HTTP method and, based on that, which in-built group (`CREATE`, `UPDATE`, `DEFAULT`)
-to use.
+Uses an injection-enabled `JoiPipe` which can look at the request to determine the HTTP method and, based on that, which in-built group (`CREATE`, `UPDATE`, `DEFAULT`) to use.
 
-Validates against the schema constructed from the `metatype`, if present, taking into
-account the group determined as stated above.
+Validates against the schema constructed from the `metatype`, if present, taking into account the group determined as stated above.
 
 ```typescript
 export class BookDto {
@@ -240,8 +210,7 @@ class BookController {
 
 ## `@JoiSchema()` property decorator
 
-Define a schema on a type (class) property. Properties with a schema annotation
-are used to construct a full object schema.
+Define a schema on a type (class) property. Properties with a schema annotation are used to construct a full object schema.
 
 **Example**
 
@@ -296,14 +265,11 @@ class BookDto {
 
 ### `@JoiSchema(nestedType, customizeSchemaCallback?)`
 
-Assign the full schema constructed from the passed `nestedType` to the decorated property,
-for the `DEFAULT` group.
+Assign the full schema constructed from the passed `nestedType` to the decorated property, for the `DEFAULT` group.
 
-The nested schema is constructed using the same method as other schemas, e.g.
-non-decorated properties are not used in constructing the schema.
+The nested schema is constructed using the same method as other schemas, e.g. non-decorated properties are not used in constructing the schema.
 
-If the optional `customizeSchemaCallback` is provided, it will be called with the constructed
-schema to allow customization, e.g. ´.options()´, `.required()` and so on.
+If the optional `customizeSchemaCallback` is provided, it will be called with the constructed schema to allow customization, e.g. ´.options()´, `.required()` and so on.
 
 **Example**
 
@@ -316,8 +282,7 @@ class AuthorDto {
 
 ### `@JoiSchema(groups[], nestedType, customizeSchemaCallback?)`
 
-Assign the full schema constructed from the passed `nestedType` to the decorated property,
-for the passed groups.
+Assign the full schema constructed from the passed `nestedType` to the decorated property, for the passed groups.
 
 **Example**
 
@@ -330,19 +295,13 @@ class AuthorDto {
 
 ### `@JoiSchema([nestedType], customizeArraySchemaCallback?, customizeSchemaCallback?)`
 
-Assign a `Joi.array()`, with the full schema constructed from the passed `nestedType` as
-`.item()`, to the decorated property, for the `DEFAULT` group.
+Assign a `Joi.array()`, with the full schema constructed from the passed `nestedType` as `.item()`, to the decorated property, for the `DEFAULT` group.
 
-The nested schema is constructed using the same method as other schemas, e.g.
-non-decorated properties are not used in constructing the schema.
+The nested schema is constructed using the same method as other schemas, e.g. non-decorated properties are not used in constructing the schema.
 
-If `customizeArraySchemaCallback` is provided, it will be called with the constructed
-_outer_ schema - the `.array()` schema - to allow customization, e.g.
-´.options()´, `.required()` and so on.
+If `customizeArraySchemaCallback` is provided, it will be called with the constructed _outer_ schema - the `.array()` schema - to allow customization, e.g. ´.options()´, `.required()` and so on.
 
-If `customizeSchemaCallback` is provided, it will be called with the constructed
-_inner_ schema - the one passed to `.item()` - to allow customization, e.g.
-´.options()´, `.required()` and so on.
+If `customizeSchemaCallback` is provided, it will be called with the constructed _inner_ schema - the one passed to `.item()` - to allow customization, e.g. ´.options()´, `.required()` and so on.
 
 **Example**
 
@@ -364,8 +323,7 @@ class AuthorDto {
 
 ### `@JoiSchema(groups[], [nestedType], customizeArraySchemaCallback?, customizeSchemaCallback?)`
 
-Assign a `Joi.array()`, with the full schema constructed from the passed `nestedType` as
-`.item()`, to the decorated property, for the passed groups.
+Assign a `Joi.array()`, with the full schema constructed from the passed `nestedType` as `.item()`, to the decorated property, for the passed groups.
 
 **Example**
 
@@ -383,8 +341,7 @@ class AuthorDto {
 
 ## `@JoiSchemaOptions()` class decorator
 
-Assign the passed Joi _options_ to be passed to `.options()` on the full constructed
-schema.
+Assign the passed Joi _options_ to be passed to `.options()` on the full constructed schema.
 
 **Example**
 
@@ -432,12 +389,9 @@ class BookDto {
 
 ## `@JoiSchemaExtends(type)` class decorator
 
-Specify an alternative extended class for schema construction.
-`type` must be a class constructor.
+Specify an alternative extended class for schema construction. `type` must be a class constructor.
 
-This decorator is useful for cases where the actual parent class in the prototype chain
-is not the class that has been decorated with `@JoiSchema()` etc., possibly as
-a result of some other transformation, as with `@nestjs/graphql`'s `OmitType()`.
+This decorator is useful for cases where the actual parent class in the prototype chain is not the class that has been decorated with `@JoiSchema()` etc., possibly as a result of some other transformation, as with `@nestjs/graphql`'s `OmitType()`.
 
 The following example illustrates the behavior:
 
@@ -462,11 +416,7 @@ class ThrillerDto {
 }
 ```
 
-For an actual use case, consider the following example for a `@nestjs/graphql`
-`InputType`, where `OmitType()` creates a new internal class on which it tacks
-on all the properties from `Book`, but without applying any decorators.
-Without `@JoiSchemaExtends()`, no decorated properties from `Book` would be
-present in the final schema:
+For an actual use case, consider the following example for a `@nestjs/graphql` `InputType`, where `OmitType()` creates a new internal class on which it tacks on all the properties from `Book`, but without applying any decorators. Without `@JoiSchemaExtends()`, no decorated properties from `Book` would be present in the final schema:
 
 ```typescript
 // Does not work as expected
@@ -488,28 +438,18 @@ export class CreateBookInput extends OmitType(Book, ['id'], InputType) {
 
 ## Validation groups
 
-Groups can be used to annotate a property (`@JoiSchema`) or class
-(`@JoiSchemaOptions`) with different schemas/options for different use cases
-without having to define a new type.
+Groups can be used to annotate a property (`@JoiSchema`) or class (`@JoiSchemaOptions`) with different schemas/options for different use cases without having to define a new type.
 
-A straightforward use case for this is a type/DTO that behaves slightly differently
-in each of the CREATE and UPDATE scenarios. The built-in groups explained below
-are meant to make interfacing with that use case easier.
+A straightforward use case for this is a type/DTO that behaves slightly differently in each of the CREATE and UPDATE scenarios. The built-in groups explained below are meant to make interfacing with that use case easier.
 
 ### Built-in groups: `DEFAULT`, `CREATE`, `UPDATE`
 
 Three built-in groups are defined:
 
-- `DEFAULT` is the default group assigned under the hood
-  to any schema defined on a property if a group is not explicitely specified.
-- `CREATE` is used for validation if `JoiPipe` is used in
-  injection-enabled mode (either through `JoiPipeModule` or `@Body(JoiPipe)` etc.)
-  and the request method is either `POST` or `PUT`
-  - `PUT` is defined as being capable of completely replacing a resource
-    or creating a new one in case a unique key is not found, which means
-    all properties must be present the same way as for `POST`.
-- `UPDATE` works the same way as `CREATE`, but is used if the
-  request method is `PATCH`.
+- `DEFAULT` is the default group assigned under the hood to any schema defined on a property if a group is not explicitely specified.
+- `CREATE` is used for validation if `JoiPipe` is used in injection-enabled mode (either through `JoiPipeModule` or `@Body(JoiPipe)` etc.) and the request method is either `POST` or `PUT`
+  - `PUT` is defined as being capable of completely replacing a resource or creating a new one in case a unique key is not found, which means all properties must be present the same way as for `POST`.
+- `UPDATE` works the same way as `CREATE`, but is used if the request method is `PATCH`.
 
 They can be imported in one of two ways, depending on your preference:
 
@@ -522,13 +462,9 @@ JoiValidationGroups.CREATE === CREATE; // true
 
 ## `JoiPipeModule`
 
-Importing `JoiPipeModule` into a module will install `JoiPipe` as a global
-injection-enabled pipe.
+Importing `JoiPipeModule` into a module will install `JoiPipe` as a global injection-enabled pipe.
 
-This is a prerequisite for `JoiPipe` to be able to
-use the built-in groups `CREATE` and `UPDATE`, since the `JoiPipe` must be able to
-have the `Request` injected to determine the HTTP method. Calling
-`useGlobalPipe(new JoiPipe())` is not enough to achieve that.
+This is a prerequisite for `JoiPipe` to be able to use the built-in groups `CREATE` and `UPDATE`, since the `JoiPipe` must be able to have the `Request` injected to determine the HTTP method. Calling `useGlobalPipe(new JoiPipe())` is not enough to achieve that.
 
 **Example**
 
@@ -597,12 +533,9 @@ Joi.object()
 
 ## `getTypeSchema(type, opts?: { group? })`
 
-This function can be called to obtain the `Joi` schema constructed from
-`type`. This is the function used internally by `JoiPipe` when it is called
-with an explicit/implicit type/metatype. Nothing is cached.
+This function can be called to obtain the `Joi` schema constructed from `type`. This is the function used internally by `JoiPipe` when it is called with an explicit/implicit type/metatype. Nothing is cached.
 
-A group can be passed to construct the schema for a specific
-group (together with the groups specified in `@JoiSchema()` etc.).
+A group can be passed to construct the schema for a specific group (together with the groups specified in `@JoiSchema()` etc.).
 
 This function makes possible advanced uses such as the following:
 
