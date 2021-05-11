@@ -96,7 +96,9 @@ describe('getTypeSchema with', () => {
               allow: ['basic_prop2'],
             },
           },
-          preferences: {},
+          preferences: {
+            allowUnknown: false,
+          },
         });
       });
     });
@@ -125,7 +127,9 @@ describe('getTypeSchema with', () => {
               allow: ['basic_prop2_group1'],
             },
           },
-          preferences: {},
+          preferences: {
+            allowUnknown: false,
+          },
         });
       });
     });
@@ -211,7 +215,9 @@ describe('getTypeSchema with', () => {
               allow: ['extended_extendedProp'],
             },
           },
-          preferences: {},
+          preferences: {
+            allowUnknown: false,
+          },
         });
       });
     });
@@ -248,7 +254,9 @@ describe('getTypeSchema with', () => {
               allow: ['extended_extendedProp_group1'],
             },
           },
-          preferences: {},
+          preferences: {
+            allowUnknown: false,
+          },
         });
       });
     });
@@ -334,7 +342,9 @@ describe('getTypeSchema with', () => {
               allow: ['decorator_extended_extendedProp'],
             },
           },
-          preferences: {},
+          preferences: {
+            allowUnknown: false,
+          },
         });
       });
     });
@@ -371,7 +381,9 @@ describe('getTypeSchema with', () => {
               allow: ['decorator_extended_extendedProp_group1'],
             },
           },
-          preferences: {},
+          preferences: {
+            allowUnknown: false,
+          },
         });
       });
     });
@@ -544,7 +556,9 @@ describe('getTypeSchema with', () => {
                   allow: ['extended_extendedProp_group1'],
                 },
               },
-              preferences: {},
+              preferences: {
+                allowUnknown: false,
+              },
             },
           },
           preferences: {},
@@ -650,7 +664,9 @@ describe('getTypeSchema with', () => {
                       allow: ['extended_extendedProp_group1'],
                     },
                   },
-                  preferences: {},
+                  preferences: {
+                    allowUnknown: false,
+                  },
                 },
               ],
             },
@@ -729,7 +745,9 @@ describe('getTypeSchema with', () => {
                   allow: ['basic_prop2_group1'],
                 },
               },
-              preferences: {},
+              preferences: {
+                allowUnknown: false,
+              },
               flags: {
                 presence: 'required',
               },
@@ -819,7 +837,9 @@ describe('getTypeSchema with', () => {
                       allow: ['basic_prop2_group1'],
                     },
                   },
-                  preferences: {},
+                  preferences: {
+                    allowUnknown: false,
+                  },
                 },
               ],
               flags: {
@@ -914,7 +934,9 @@ describe('getTypeSchema with', () => {
                       allow: ['basic_prop2_group1'],
                     },
                   },
-                  preferences: {},
+                  preferences: {
+                    allowUnknown: false,
+                  },
                   flags: {
                     presence: 'required',
                   },

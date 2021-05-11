@@ -68,20 +68,17 @@ export function getTypeSchema(
       proto.constructor,
     );
     // Decorator was used to specify options on this proto
-    if (optionsMeta) {
-      let protoOptions: Joi.ValidationOptions = {};
-      if (group) {
-        if (optionsMeta.has(group)) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          protoOptions = optionsMeta.get(group)!;
-        }
-      } else if (optionsMeta.has(JoiValidationGroups.DEFAULT)) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        protoOptions = optionsMeta.get(JoiValidationGroups.DEFAULT)!;
-      }
-
-      Object.assign(options, protoOptions);
+    let protoOptions: Joi.ValidationOptions;
+    if (optionsMeta && group && optionsMeta.has(group)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      protoOptions = optionsMeta.get(group)!;
+    } else if (optionsMeta && optionsMeta.has(JoiValidationGroups.DEFAULT)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      protoOptions = optionsMeta.get(JoiValidationGroups.DEFAULT)!;
+    } else {
+      protoOptions = {};
     }
+    Object.assign(options, protoOptions);
 
     // Check for property information on proto
     /* istanbul ignore next */

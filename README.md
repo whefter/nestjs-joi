@@ -17,9 +17,9 @@ Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional dec
     - [`new JoiPipe(type, pipeOpts?)`](#new-joipipetype-pipeopts)
     - [`new JoiPipe(joiSchema, pipeOpts?)`](#new-joipipejoischema-pipeopts)
     - [Pipe options (`pipeOpts`)](#pipe-options-pipeopts)
-    - [Error handling and custom schema errors](#error-handling-and-custom-schema-errors)
     - [Injection-enabled mode: `JoiPipe` (`@Query(JoiPipe)`, `@Param(JoiPipe)`, ...)](#injection-enabled-mode-joipipe-queryjoipipe-paramjoipipe-)
     - [Defining `pipeOpts` in injection-enabled mode](#defining-pipeopts-in-injection-enabled-mode)
+    - [Error handling and custom schema errors](#error-handling-and-custom-schema-errors)
   - [`@JoiSchema()` property decorator](#joischema-property-decorator)
     - [`@JoiSchema(joiSchema)`](#joischemajoischema)
     - [`@JoiSchema(groups[], joiSchema)`](#joischemagroups-joischema)
@@ -141,7 +141,7 @@ export class BookController {
 
 A `JoiPipe` that will handle payloads based on a schema determined by the passed `metatype`, if present.
 
-If `group` is passed in the `pipeOpts`, only decorations specified for that group will be used to construct the schema.
+If `group` is passed in the `pipeOpts`, only decorators specified for that group or the `DEFAULT` group will be used to construct the schema.
 
 ```typescript
   @Post('/')
@@ -155,7 +155,7 @@ If `group` is passed in the `pipeOpts`, only decorations specified for that grou
 
 A `JoiPipe` that will handle payloads based on the schema constructed from the passed `type`. This pipe will ignore the request `metatype`.
 
-If `group` is passed in the `pipeOpts`, only decorations specified for that group will be used to construct the schema.
+If `group` is passed in the `pipeOpts`, only decorations specified for that group or the `DEFAULT` group will be used to construct the schema.
 
 ```typescript
   @Post('/')
@@ -169,7 +169,7 @@ If `group` is passed in the `pipeOpts`, only decorations specified for that grou
 
 A `JoiPipe` that will handle payloads based on the schema passed in the constructor parameters. This pipe will ignore the request `metatype`.
 
-If `group` is passed in the `pipeOpts`, only decorations specified for that group will be used to construct the schema.
+If `group` is passed in the `pipeOpts`, only decorations specified for that group or the `DEFAULT` group will be used to construct the schema.
 
 ```typescript
   @Get('/:bookId')
@@ -183,7 +183,7 @@ If `group` is passed in the `pipeOpts`, only decorations specified for that grou
 
 Currently, the following options are available:
 
-- `group` (`string | symbol`) When a `group` is defined,, only decorators specified for that group when declaring the schema will be used to construct the schema. **Default:** `undefined`
+- `group` (`string | symbol`) When a `group` is defined, only decorators specified for that group or the `DEFAULT` group when declaring the schema will be used to construct the schema. **Default:** `undefined`
 - `usePipeValidationException` (`boolean`) By default, `JoiPipe` throws a NestJS `BadRequestException` when a validation error occurs. This results in a `400 Bad Request` response, which should be suitable to most cases. If you need to have a reliable way to catch the thrown error, for example in an exception filter, set this to `true` to throw a `JoiPipeValidationException` instead. **Default:** `false`
 
 ### Injection-enabled mode: `JoiPipe` (`@Query(JoiPipe)`, `@Param(JoiPipe)`, ...)
