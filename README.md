@@ -9,6 +9,7 @@
 Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional decorator-based schema construction.
 
 - [Installation](#installation)
+  - [Peer dependencies](#peer-dependencies)
 - [Usage](#usage)
   - [A note on `@nestjs/graphql`](#a-note-on-nestjsgraphql)
 - [Reference](#reference)
@@ -41,6 +42,12 @@ Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional dec
 
 ```bash
 npm install --save nestjs-joi
+```
+
+## Peer dependencies
+
+```bash
+npm install --save joi @nestjs/common@^7 @nestjs/core@^7 joi@^17 reflect-metadata@^0.1
 ```
 
 # Usage
