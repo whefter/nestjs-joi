@@ -1,4 +1,5 @@
-name: test & publish
+# this name shows up on the GitHub Actions badge
+name: publish
 
 on:
   push:

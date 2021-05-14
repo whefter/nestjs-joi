@@ -1,3 +1,4 @@
+# this name shows up on the GitHub Actions badge
 name: test
 
 on:
