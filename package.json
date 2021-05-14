@@ -1,6 +1,6 @@
 {
   "name": "nestjs-joi",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Easy to use JoiPipe as an interface between joi and NestJS with optional decorator-based schema construction.",
   "scripts": {
     "test": "NODE_ENV=testing jest -c .jest.json --watchAll",

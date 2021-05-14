@@ -47,7 +47,7 @@ npm install --save nestjs-joi
 ## Peer dependencies
 
 ```bash
-npm install --save joi @nestjs/common@^7 @nestjs/core@^7 joi@^17 reflect-metadata@^0.1
+npm install --save @nestjs/common@^7 @nestjs/core@^7 joi@^17 reflect-metadata@^0.1
 ```
 
 # Usage
