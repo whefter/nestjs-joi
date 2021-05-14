@@ -28,7 +28,7 @@
   "types": "index.d.ts",
   "typings": "index.d.ts",
   "dependencies": {
-    "lodash": "^4.17.20"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
