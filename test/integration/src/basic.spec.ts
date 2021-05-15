@@ -4,9 +4,9 @@
 import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';
 import { fromPairs } from 'lodash';
+import { JoiPipe } from 'nestjs-joi';
+import { Class } from 'type-fest';
 
-import { JoiPipe } from '../../../src';
-import { Constructor } from '../../../src/internal/defs';
 import {
   AdvancedType,
   BasicType,
@@ -119,7 +119,7 @@ describe('basic integration', () => {
   const CASES: {
     [name: string]: {
       fit?: boolean;
-      type: Constructor;
+      type: Class;
       opts: { group?: string };
       payload: unknown;
       expectErrors: string[];

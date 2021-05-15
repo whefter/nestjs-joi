@@ -3,8 +3,7 @@
 
 import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';
-
-import { CREATE, DEFAULT, JoiPipe, UPDATE } from '../../../src';
+import { CREATE, DEFAULT, JoiPipe, UPDATE } from 'nestjs-joi';
 
 describe('request injection', () => {
   class metatype {

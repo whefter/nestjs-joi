@@ -9,15 +9,18 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "globals": {
+    "ts-jest": {
+      "tsconfig": "<rootDir>/test/integration/tsconfig.json"
+    }
+  },
   "setupFilesAfterEnv": [
     "<rootDir>/test/integration/setup.ts"
   ],
-  "collectCoverage": true,
-  "coverageDirectory": "coverage/",
-  "coverageReporters": [
-    "text-summary",
-    "json",
-    "html",
-    "lcov"
-  ]
+  "moduleNameMapper": {
+    "^nestjs-joi$": "<rootDir>/src/index",
+    "^nestjs-joi/(.*)$": [
+      "<rootDir>/src/$1"
+    ]
+  }
 }
