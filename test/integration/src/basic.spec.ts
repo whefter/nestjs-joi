@@ -22,7 +22,7 @@ import {
   TypeWithNestedTypeArray,
   TypeWithNestedTypeArrayAndArrayCustomizer,
   TypeWithNestedTypeArrayAndCustomizer,
-} from '../fixtures';
+} from '../../fixtures';
 
 describe('basic integration', () => {
   describe('with schema as argument', () => {

@@ -1,0 +1,23 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "testEnvironment": "node",
+  "testRegex": "test/integration/.*\\.spec\\.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "setupFilesAfterEnv": [
+    "<rootDir>/test/integration/setup.ts"
+  ],
+  "collectCoverage": true,
+  "coverageDirectory": "coverage/",
+  "coverageReporters": [
+    "text-summary",
+    "json",
+    "html",
+    "lcov"
+  ]
+}

@@ -5,12 +5,12 @@
     "ts"
   ],
   "testEnvironment": "node",
-  "testRegex": "test/.*\\.spec\\.ts$",
+  "testRegex": "test/unit/.*\\.spec\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "setupFilesAfterEnv": [
-    "<rootDir>/test/setup.ts"
+    "<rootDir>/test/unit/setup.ts"
   ],
   "collectCoverage": true,
   "coverageDirectory": "coverage/",

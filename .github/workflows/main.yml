@@ -25,8 +25,11 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm install
-      - run: npm run test:once
-      - name: Coveralls
+      - name: Unit tests
+        run: npm run test:unit:once
+      - name: API tests
+        run: npm run test:integration:once
+      - name: Coveralls (unit tests)
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
