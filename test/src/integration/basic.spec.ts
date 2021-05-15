@@ -2,9 +2,10 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
 import * as Joi from 'joi';
+import { JoiSchema } from 'joi-class-decorators';
 import { fromPairs } from 'lodash';
 
-import { JoiPipe, JoiSchema } from '../../../src';
+import { JoiPipe } from '../../../src';
 import { Constructor } from '../../../src/internal/defs';
 import {
   AdvancedType,

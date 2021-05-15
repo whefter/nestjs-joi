@@ -11,16 +11,15 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import * as Joi from 'joi';
+import { getTypeSchema, JoiValidationGroup } from 'joi-class-decorators';
 import { SetRequired } from 'type-fest';
 
 import {
   Constructor,
   JOIPIPE_OPTIONS,
   JoiPipeValidationException,
-  JoiValidationGroup,
   JoiValidationGroups,
 } from './defs';
-import { getTypeSchema } from './get-type-schema';
 
 export interface JoiPipeOptions {
   group?: JoiValidationGroup;

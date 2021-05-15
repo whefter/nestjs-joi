@@ -2,8 +2,9 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
 import * as Joi from 'joi';
+import { JoiSchema } from 'joi-class-decorators';
 
-import { CREATE, DEFAULT, JoiPipe, JoiSchema, UPDATE } from '../../../src';
+import { CREATE, DEFAULT, JoiPipe, UPDATE } from '../../../src';
 
 describe('request injection', () => {
   class metatype {
