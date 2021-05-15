@@ -28,7 +28,7 @@ jobs:
       - name: Unit tests
         run: npm run test:unit:once
       - name: API tests
-        run: npm run test:integration:once
+        run: npm run test:api:once
       - name: Coveralls (unit tests)
         uses: coverallsapp/github-action@master
         with:

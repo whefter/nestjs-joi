@@ -5,17 +5,17 @@
     "ts"
   ],
   "testEnvironment": "node",
-  "testRegex": "test/integration/.*\\.spec\\.ts$",
+  "testRegex": "test/api/.*\\.spec\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "globals": {
     "ts-jest": {
-      "tsconfig": "<rootDir>/test/integration/tsconfig.json"
+      "tsconfig": "<rootDir>/test/api/tsconfig.json"
     }
   },
   "setupFilesAfterEnv": [
-    "<rootDir>/test/integration/setup.ts"
+    "<rootDir>/test/api/setup.ts"
   ],
   "moduleNameMapper": {
     "^nestjs-joi$": "<rootDir>/src/index",
