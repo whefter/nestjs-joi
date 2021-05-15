@@ -20,6 +20,11 @@
     "html",
     "lcov"
   ],
+  "coveragePathIgnorePatterns": [
+    "/node_modules/",
+    "src/internal/defs\\.ts",
+    "src/index\\.ts"
+  ],
   "coverageThreshold": {
     "global": {
       "branches": 100,
