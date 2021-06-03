@@ -16,9 +16,9 @@ import {
 } from '@nestjs/graphql';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as Joi from 'joi';
+import { JoiSchema, JoiSchemaExtends } from 'joi-class-decorators';
+import { CREATE, JoiPipe, JoiValidationGroups } from 'nestjs-joi';
 import * as request from 'supertest';
-
-import { CREATE, JoiPipe, JoiSchema, JoiSchemaExtends, JoiValidationGroups } from '../../../src';
 
 describe('NestJS GraphQL integration', () => {
   @ObjectType()

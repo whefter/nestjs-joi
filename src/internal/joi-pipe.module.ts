@@ -38,6 +38,7 @@ export class JoiPipeModule {
 
     return {
       module: JoiPipeModule,
+      global: true,
       providers,
     };
   }

@@ -2,10 +2,11 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
 import * as Joi from 'joi';
+import { JoiSchema } from 'joi-class-decorators';
 import { fromPairs } from 'lodash';
+import { JoiPipe } from 'nestjs-joi';
+import { Class } from 'type-fest';
 
-import { JoiPipe, JoiSchema } from '../../../src';
-import { Constructor } from '../../../src/internal/defs';
 import {
   AdvancedType,
   BasicType,
@@ -21,7 +22,7 @@ import {
   TypeWithNestedTypeArray,
   TypeWithNestedTypeArrayAndArrayCustomizer,
   TypeWithNestedTypeArrayAndCustomizer,
-} from '../fixtures';
+} from '../../fixtures';
 
 describe('basic integration', () => {
   describe('with schema as argument', () => {
@@ -118,7 +119,7 @@ describe('basic integration', () => {
   const CASES: {
     [name: string]: {
       fit?: boolean;
-      type: Constructor;
+      type: Class;
       opts: { group?: string };
       payload: unknown;
       expectErrors: string[];

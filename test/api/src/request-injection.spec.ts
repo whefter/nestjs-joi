@@ -2,8 +2,8 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
 import * as Joi from 'joi';
-
-import { CREATE, DEFAULT, JoiPipe, JoiSchema, UPDATE } from '../../../src';
+import { JoiSchema } from 'joi-class-decorators';
+import { CREATE, DEFAULT, JoiPipe, UPDATE } from 'nestjs-joi';
 
 describe('request injection', () => {
   class metatype {

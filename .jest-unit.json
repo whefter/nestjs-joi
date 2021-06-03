@@ -5,12 +5,12 @@
     "ts"
   ],
   "testEnvironment": "node",
-  "testRegex": "test/.*\\.spec\\.ts$",
+  "testRegex": "test/unit/.*\\.spec\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "setupFilesAfterEnv": [
-    "<rootDir>/test/setup.ts"
+    "<rootDir>/test/unit/setup.ts"
   ],
   "collectCoverage": true,
   "coverageDirectory": "coverage/",
@@ -19,6 +19,11 @@
     "json",
     "html",
     "lcov"
+  ],
+  "coveragePathIgnorePatterns": [
+    "/node_modules/",
+    "src/internal/defs\\.ts",
+    "src/index\\.ts"
   ],
   "coverageThreshold": {
     "global": {
