@@ -24,18 +24,20 @@ import {
 export interface JoiPipeOptions {
   group?: JoiValidationGroup;
   usePipeValidationException?: boolean;
+  defaultValidationOptions?: Joi.ValidationOptions;
 }
 type ValidatedJoiPipeOptions = SetRequired<JoiPipeOptions, 'usePipeValidationException'>;
-const DEFAULT_JOI_PIPE_OPTS: ValidatedJoiPipeOptions = {
-  group: undefined,
-  usePipeValidationException: false,
-};
-const JOI_PIPE_OPTS_KEYS = Object.keys(DEFAULT_JOI_PIPE_OPTS);
 
 const DEFAULT_JOI_OPTS: Joi.ValidationOptions = {
   abortEarly: false,
   allowUnknown: true,
 };
+const DEFAULT_JOI_PIPE_OPTS: ValidatedJoiPipeOptions = {
+  group: undefined,
+  usePipeValidationException: false,
+  defaultValidationOptions: DEFAULT_JOI_OPTS,
+};
+const JOI_PIPE_OPTS_KEYS = Object.keys(DEFAULT_JOI_PIPE_OPTS);
 
 // TODO Check if there is a more efficient/reliable test for generic request objects
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,7 +105,16 @@ export class JoiPipe implements PipeTransform {
       return payload;
     }
 
-    return JoiPipe.validate(payload, schema, this.pipeOpts.usePipeValidationException, metadata);
+    return JoiPipe.validate(
+      payload,
+      schema,
+      this.pipeOpts.usePipeValidationException,
+      // It is technically impossible for this to be undefined since it is explicitely assigned
+      // with a default value in parseOptions(), so it is almost impossible to test.
+      /* istanbul ignore next */
+      this.pipeOpts.defaultValidationOptions || DEFAULT_JOI_OPTS,
+      metadata,
+    );
   }
 
   // Called "validate" and NOT "transform", because that would make it match
@@ -113,6 +124,7 @@ export class JoiPipe implements PipeTransform {
     payload: unknown,
     schema: Joi.Schema,
     usePipeValidationException: boolean,
+    validationOptions: Joi.ValidationOptions,
     /* istanbul ignore next */
     metadata: ArgumentMetadata = { type: 'custom' },
   ): T {
@@ -120,7 +132,7 @@ export class JoiPipe implements PipeTransform {
       payload,
       // This will always get overridden by whatever options have been specified
       // on the schema itself
-      DEFAULT_JOI_OPTS,
+      validationOptions,
     );
 
     if (error) {
@@ -163,6 +175,14 @@ export class JoiPipe implements PipeTransform {
         ...DEFAULT_JOI_PIPE_OPTS,
       },
       pipeOpts || {},
+    );
+    // Nested merge of the Joi ValidationOptions.
+    // TODO This could probably be combined with the above assignment in a deep merge.
+    pipeOpts.defaultValidationOptions = Object.assign<Joi.ValidationOptions, Joi.ValidationOptions>(
+      {
+        ...DEFAULT_JOI_OPTS,
+      },
+      pipeOpts.defaultValidationOptions || {},
     );
 
     const errors: string[] = [];

@@ -10,7 +10,19 @@ import { CREATE, JoiPipe, JoiPipeValidationException, UPDATE } from '../../../sr
 class metatype {
   @JoiSchema(Joi.number().required())
   prop!: number;
+
+  @JoiSchema(Joi.number().optional())
+  prop2!: number;
 }
+const metatypeSchema = Joi.object()
+  .keys({
+    prop: Joi.number().required(),
+    prop2: Joi.number().optional(),
+  })
+  .options({
+    abortEarly: false,
+    allowUnknown: true,
+  });
 
 class CustomError extends Error {}
 class errorMetatype {
@@ -204,6 +216,55 @@ describe('JoiPipe', () => {
         }
       });
 
+      it('should use the default JoiValidationOptions if none have been specified in the pipe options', async () => {
+        const pipe = new JoiPipe({});
+
+        // Unknown property to test the default setting of "allowUnknown: true"
+        const returnVal = pipe.transform({ prop: 1, unknownProp: 1 }, { type: 'query', metatype });
+        expect(returnVal).toEqual({ prop: 1, unknownProp: 1 });
+      });
+
+      it('should use the default JoiValidationOptions if undefined was passed in the pipe options', async () => {
+        const pipe = new JoiPipe({
+          defaultValidationOptions: undefined,
+        });
+
+        // Unknown property to test the default setting of "allowUnknown: true"
+        const returnVal = pipe.transform({ prop: 1, unknownProp: 1 }, { type: 'query', metatype });
+        expect(returnVal).toEqual({ prop: 1, unknownProp: 1 });
+      });
+
+      it('should use the JoiValidationOptions passed in the pipe options', async () => {
+        const pipe = new JoiPipe({
+          defaultValidationOptions: {
+            stripUnknown: true,
+          },
+        });
+
+        // unknownProp should be stripped
+        const returnVal = pipe.transform({ prop: 1, unknownProp: 1 }, { type: 'query', metatype });
+        expect(returnVal).toEqual({ prop: 1 });
+      });
+
+      it('should partially override the default JoiValidationOptions', async () => {
+        // Overrides the default value "allowUnknown = true", but leaves "abortEarly = false"
+        const pipe = new JoiPipe({
+          defaultValidationOptions: {
+            allowUnknown: false,
+          },
+        });
+
+        try {
+          // Should produce two errors, one for the incorrect type of "prop" and one for the unknown property
+          pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query', metatype });
+          throw new Error('should not be thrown');
+        } catch (error) {
+          expect(error.message).toBe(
+            'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
+          );
+        }
+      });
+
       it('should NOT validate when given a type with no decorated properties', async () => {
         const pipe = new JoiPipe();
 
@@ -354,6 +415,56 @@ describe('JoiPipe', () => {
           expect(error instanceof CustomError).toBeTruthy();
         }
       });
+
+      it('should use the default JoiValidationOptions if none have been specified in the pipe options', async () => {
+        const pipe = new JoiPipe(metatypeSchema);
+
+        // Unknown property to test the default setting of "allowUnknown: true"
+        const returnVal = pipe.transform({ prop: 1, unknownProp: 1 }, { type: 'query' });
+        expect(returnVal).toEqual({ prop: 1, unknownProp: 1 });
+      });
+
+      it('should use the default JoiValidationOptions if undefined was passed in the pipe options', async () => {
+        const pipe = new JoiPipe(metatypeSchema, {
+          defaultValidationOptions: undefined,
+        });
+
+        // Unknown property to test the default setting of "allowUnknown: true"
+        const returnVal = pipe.transform({ prop: 1, unknownProp: 1 }, { type: 'query' });
+        expect(returnVal).toEqual({ prop: 1, unknownProp: 1 });
+      });
+
+      it('should use the JoiValidationOptions passed in the pipe options', async () => {
+        const pipe = new JoiPipe(metatypeSchema, {
+          defaultValidationOptions: {
+            stripUnknown: true,
+          },
+        });
+
+        // unknownProp should be stripped
+        const returnVal = pipe.transform({ prop: 1, unknownProp: 1 }, { type: 'query' });
+        expect(returnVal).toEqual({ prop: 1 });
+      });
+
+      it('should not be possible to override explicit schema JoiValidationOptions in the JoiPipeOptions', async () => {
+        // Attempt to override the default value "allowUnknown = true", but leave "abortEarly = false"
+        const pipe = new JoiPipe(metatypeSchema, {
+          defaultValidationOptions: {
+            allowUnknown: false,
+          },
+        });
+
+        try {
+          // Should produce one error for the incorrect type of "prop", but non for the unknown property, because
+          // the schema itself specifies allowUnknown: true, which takes precedence
+          pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query' });
+          throw new Error('should not be thrown');
+        } catch (error) {
+          expect(error.message).toBe(
+            'Request validation of query failed, because: "prop" must be a number',
+          );
+        }
+      });
     });
   });
 
@@ -470,6 +581,55 @@ describe('JoiPipe', () => {
         } catch (error) {
           expect(error.message).toBe('custom message');
           expect(error instanceof CustomError).toBeTruthy();
+        }
+      });
+
+      it('should use the default JoiValidationOptions if none have been specified in the pipe options', async () => {
+        const pipe = new JoiPipe(metatype, {});
+
+        // Unknown property to test the default setting of "allowUnknown: true"
+        const returnVal = pipe.transform({ prop: 1, unknownProp: 1 }, { type: 'query' });
+        expect(returnVal).toEqual({ prop: 1, unknownProp: 1 });
+      });
+
+      it('should use the default JoiValidationOptions if undefined was passed in the pipe options', async () => {
+        const pipe = new JoiPipe(metatype, {
+          defaultValidationOptions: undefined,
+        });
+
+        // Unknown property to test the default setting of "allowUnknown: true"
+        const returnVal = pipe.transform({ prop: 1, unknownProp: 1 }, { type: 'query' });
+        expect(returnVal).toEqual({ prop: 1, unknownProp: 1 });
+      });
+
+      it('should use the JoiValidationOptions passed in the pipe options', async () => {
+        const pipe = new JoiPipe(metatype, {
+          defaultValidationOptions: {
+            stripUnknown: true,
+          },
+        });
+
+        // unknownProp should be stripped
+        const returnVal = pipe.transform({ prop: 1, unknownProp: 1 }, { type: 'query' });
+        expect(returnVal).toEqual({ prop: 1 });
+      });
+
+      it('should partially override the default JoiValidationOptions', async () => {
+        // Overrides the default value "allowUnknown = true", but leaves "abortEarly = false"
+        const pipe = new JoiPipe(metatype, {
+          defaultValidationOptions: {
+            allowUnknown: false,
+          },
+        });
+
+        try {
+          // Should produce two errors, one for the incorrect type of "prop" and one for the unknown property
+          pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query' });
+          throw new Error('should not be thrown');
+        } catch (error) {
+          expect(error.message).toBe(
+            'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
+          );
         }
       });
 
@@ -644,6 +804,64 @@ describe('JoiPipe', () => {
             } catch (error) {
               expect(error.message).toBe('custom message');
               expect(error instanceof CustomError).toBeTruthy();
+            }
+          });
+
+          it('should use the default JoiValidationOptions if none have been specified in the pipe options', async () => {
+            const pipe = new JoiPipe(httpRequestObj, {});
+
+            // Unknown property to test the default setting of "allowUnknown: true"
+            const returnVal = pipe.transform(
+              { prop: 1, unknownProp: 1 },
+              { type: 'query', metatype },
+            );
+            expect(returnVal).toEqual({ prop: 1, unknownProp: 1 });
+          });
+
+          it('should use the default JoiValidationOptions if undefined was passed in the pipe options', async () => {
+            const pipe = new JoiPipe(httpRequestObj, {
+              defaultValidationOptions: undefined,
+            });
+
+            // Unknown property to test the default setting of "allowUnknown: true"
+            const returnVal = pipe.transform(
+              { prop: 1, unknownProp: 1 },
+              { type: 'query', metatype },
+            );
+            expect(returnVal).toEqual({ prop: 1, unknownProp: 1 });
+          });
+
+          it('should use the JoiValidationOptions passed in the pipe options', async () => {
+            const pipe = new JoiPipe(httpRequestObj, {
+              defaultValidationOptions: {
+                stripUnknown: true,
+              },
+            });
+
+            // unknownProp should be stripped
+            const returnVal = pipe.transform(
+              { prop: 1, unknownProp: 1 },
+              { type: 'query', metatype },
+            );
+            expect(returnVal).toEqual({ prop: 1 });
+          });
+
+          it('should partially override the default JoiValidationOptions', async () => {
+            // Overrides the default value "allowUnknown = true", but leaves "abortEarly = false"
+            const pipe = new JoiPipe(httpRequestObj, {
+              defaultValidationOptions: {
+                allowUnknown: false,
+              },
+            });
+
+            try {
+              // Should produce two errors, one for the incorrect type of "prop" and one for the unknown property
+              pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query', metatype });
+              throw new Error('should not be thrown');
+            } catch (error) {
+              expect(error.message).toBe(
+                'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
+              );
             }
           });
 

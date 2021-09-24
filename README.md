@@ -211,6 +211,9 @@ Currently, the following options are available:
 
 - `group` (`string | symbol`) When a `group` is defined, only decorators specified for that group or the `DEFAULT` group when declaring the schema will be used to construct the schema. **Default:** `undefined`
 - `usePipeValidationException` (`boolean`) By default, `JoiPipe` throws a NestJS `BadRequestException` when a validation error occurs. This results in a `400 Bad Request` response, which should be suitable to most cases. If you need to have a reliable way to catch the thrown error, for example in an exception filter, set this to `true` to throw a `JoiPipeValidationException` instead. **Default:** `false`
+- `defaultValidationOptions` (`Joi.ValidationOptions`) The default Joi validation options to pass to `.validate()`
+  - **Default:** `{ abortEarly: false, allowUnknown: true }`
+  - Note that validation options passed directly to a schema using `.prefs()` (or `.options()`) will **always** take precedence and can never be overridden with this option.
 
 ### Injection-enabled mode: `JoiPipe` (`@Query(JoiPipe)`, `@Param(JoiPipe)`, ...)
 
