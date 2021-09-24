@@ -1,6 +1,6 @@
 {
   "name": "nestjs-joi",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Easy to use JoiPipe as an interface between joi and NestJS with optional decorator-based schema construction.",
   "scripts": {
     "test:unit": "NODE_ENV=testing jest -c .jest-unit.json --watchAll",
@@ -31,7 +31,7 @@
   "types": "index.d.ts",
   "typings": "index.d.ts",
   "dependencies": {
-    "joi-class-decorators": "^1.0.2"
+    "joi-class-decorators": "^1.0.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
