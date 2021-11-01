@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
     "baseUrl": "./",
     "paths": {
       "nestjs-joi": [
@@ -15,7 +16,7 @@
       ],
       "nestjs-joi/*": [
         "../../src/*"
-      ],
+      ]
     }
   },
   "include": [

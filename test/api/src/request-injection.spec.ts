@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
+import assert from 'assert';
 import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';
 import { CREATE, DEFAULT, JoiPipe, UPDATE } from 'nestjs-joi';
@@ -50,6 +51,7 @@ describe('request injection', () => {
         );
         throw new Error('should not be thrown');
       } catch (error) {
+        assert(error instanceof Error);
         expect(error.message).toContain('"prop" must be a number');
       }
     });
@@ -93,6 +95,7 @@ describe('request injection', () => {
           );
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain('"prop" must be a symbol');
         }
       });
@@ -138,6 +141,7 @@ describe('request injection', () => {
           );
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain('"prop" must be a string');
         }
       });

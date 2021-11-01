@@ -17,7 +17,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';
 import { JoiPipe, JOIPIPE_OPTIONS, JoiPipeModule, JoiValidationGroups } from 'nestjs-joi';
-import * as request from 'supertest';
+import request from 'supertest';
 
 describe('NestJS integration', () => {
   class metatype {

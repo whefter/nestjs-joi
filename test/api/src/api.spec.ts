@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
+import assert from 'assert';
 import * as API from 'nestjs-joi';
 
 describe('API', () => {
@@ -65,6 +66,7 @@ describe('API', () => {
     try {
       new API.JoiPipe();
     } catch (err) {
+      assert(err instanceof Error);
       throw new Error(`API.JoiPipe is not constructible: ${err.message}`);
     }
   });
@@ -75,6 +77,7 @@ describe('API', () => {
     try {
       new API.JoiPipeModule();
     } catch (err) {
+      assert(err instanceof Error);
       throw new Error(`API.JoiPipeModule is not constructible: ${err.message}`);
     }
   });

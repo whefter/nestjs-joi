@@ -2,6 +2,7 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
 import { BadRequestException } from '@nestjs/common';
+import assert from 'assert';
 import * as Joi from 'joi';
 import { JoiSchema, JoiSchemaOptions } from 'joi-class-decorators';
 
@@ -59,6 +60,7 @@ describe('JoiPipe', () => {
           new JoiPipe(...args);
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(withMessage);
         }
       });
@@ -109,6 +111,7 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(
             'Request validation of query failed, because: "value" must be of type object',
           );
@@ -133,6 +136,7 @@ describe('JoiPipe', () => {
           pipe.transform({}, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(
             'Request validation of query failed, because: "prop" is required',
           );
@@ -146,6 +150,7 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', data: 'foo', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(`Request validation of query item 'foo' failed`);
         }
       });
@@ -211,6 +216,7 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: '-' }, { type: 'query', metatype: errorMetatype });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toBe('custom message');
           expect(error instanceof CustomError).toBeTruthy();
         }
@@ -259,6 +265,7 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toBe(
             'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
           );
@@ -304,6 +311,7 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(
             'Request validation of query failed, because: "value" must be a string',
           );
@@ -333,6 +341,7 @@ describe('JoiPipe', () => {
           pipe.transform({}, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(
             'Request validation of query failed, because: "one" is required, "two" is required',
           );
@@ -346,6 +355,7 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', data: 'foo' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(`Request validation of query item 'foo' failed`);
         }
       });
@@ -411,6 +421,7 @@ describe('JoiPipe', () => {
           pipe.transform('-', { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toBe('custom message');
           expect(error instanceof CustomError).toBeTruthy();
         }
@@ -460,6 +471,7 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toBe(
             'Request validation of query failed, because: "prop" must be a number',
           );
@@ -477,6 +489,7 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(
             'Request validation of query failed, because: "value" must be of type object',
           );
@@ -501,6 +514,7 @@ describe('JoiPipe', () => {
           pipe.transform({}, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(
             'Request validation of query failed, because: "prop" is required',
           );
@@ -514,6 +528,7 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', data: 'foo' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(`Request validation of query item 'foo' failed`);
         }
       });
@@ -579,6 +594,7 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: '-' }, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toBe('custom message');
           expect(error instanceof CustomError).toBeTruthy();
         }
@@ -627,6 +643,7 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toBe(
             'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
           );
@@ -640,6 +657,7 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: 'value' }, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
+          assert(error instanceof Error);
           expect(error.message).toContain(
             'Request validation of query failed, because: "prop" is not allowed',
           );
@@ -696,6 +714,7 @@ describe('JoiPipe', () => {
               pipe.transform({ prop: 'foo' }, { type: 'query', metatype: httpMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
+              assert(error instanceof Error);
               expect(error.message).not.toBe('should not be thrown');
             }
           });
@@ -718,6 +737,7 @@ describe('JoiPipe', () => {
               pipe.transform({ prop: 'foo' }, { type: 'query', metatype: httpMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
+              assert(error instanceof Error);
               expect(error.message).toContain(
                 `Request validation of query failed, because: "prop" must be [${value}]`,
               );
@@ -731,6 +751,7 @@ describe('JoiPipe', () => {
               pipe.transform(1, { type: 'query', data: 'foo', metatype: httpMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
+              assert(error instanceof Error);
               expect(error.message).toContain(`Request validation of query item 'foo' failed`);
             }
           });
@@ -802,6 +823,7 @@ describe('JoiPipe', () => {
               pipe.transform({ prop: '-' }, { type: 'query', metatype: errorMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
+              assert(error instanceof Error);
               expect(error.message).toBe('custom message');
               expect(error instanceof CustomError).toBeTruthy();
             }
@@ -859,6 +881,7 @@ describe('JoiPipe', () => {
               pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query', metatype });
               throw new Error('should not be thrown');
             } catch (error) {
+              assert(error instanceof Error);
               expect(error.message).toBe(
                 'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
               );

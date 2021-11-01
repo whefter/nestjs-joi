@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
+import assert from 'assert';
 import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';
 import { fromPairs } from 'lodash';
@@ -42,6 +43,7 @@ describe('basic integration', () => {
         );
         throw new Error('should not be thrown');
       } catch (error) {
+        assert(error instanceof Error);
         expect(error.message).toContain('"prop" must be a string');
       }
     });
@@ -86,6 +88,7 @@ describe('basic integration', () => {
         );
         throw new Error('should not be thrown');
       } catch (error) {
+        assert(error instanceof Error);
         expect(error.message).toContain('"prop" must be a string');
       }
     });
@@ -111,6 +114,7 @@ describe('basic integration', () => {
         );
         throw new Error('should not be thrown');
       } catch (error) {
+        assert(error instanceof Error);
         expect(error.message).toContain('"prop" must be a string');
       }
     });
@@ -119,7 +123,8 @@ describe('basic integration', () => {
   const CASES: {
     [name: string]: {
       fit?: boolean;
-      type: Class;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      type: Class<any>;
       opts: { group?: string };
       payload: unknown;
       expectErrors: string[];
@@ -574,29 +579,31 @@ describe('basic integration', () => {
       ],
       notExpectErrors: [],
     },
-    'schema constructed from type with nested type array and array customizer, respecting groups (negative)': {
-      type: TypeWithNestedTypeArrayAndArrayCustomizer,
-      opts: { group: 'group1' },
-      payload: {
-        nestedProp: undefined,
+    'schema constructed from type with nested type array and array customizer, respecting groups (negative)':
+      {
+        type: TypeWithNestedTypeArrayAndArrayCustomizer,
+        opts: { group: 'group1' },
+        payload: {
+          nestedProp: undefined,
+        },
+        expectErrors: ['"nestedProp" is required'],
+        notExpectErrors: [],
       },
-      expectErrors: ['"nestedProp" is required'],
-      notExpectErrors: [],
-    },
-    'schema constructed from type with nested type array and array customizer, respecting groups (positive)': {
-      type: TypeWithNestedTypeArrayAndArrayCustomizer,
-      opts: { group: 'group1' },
-      payload: {
-        nestedProp: [
-          {
-            prop1: 'basic_prop1_group1',
-            prop2: 'basic_prop2_group1',
-          },
-        ],
+    'schema constructed from type with nested type array and array customizer, respecting groups (positive)':
+      {
+        type: TypeWithNestedTypeArrayAndArrayCustomizer,
+        opts: { group: 'group1' },
+        payload: {
+          nestedProp: [
+            {
+              prop1: 'basic_prop1_group1',
+              prop2: 'basic_prop2_group1',
+            },
+          ],
+        },
+        expectErrors: [],
+        notExpectErrors: ['"nestedProp"'],
       },
-      expectErrors: [],
-      notExpectErrors: ['"nestedProp"'],
-    },
     'schema constructed from type with nested type array and customizer (positive)': {
       type: TypeWithNestedTypeArrayAndCustomizer,
       opts: {},
@@ -623,29 +630,31 @@ describe('basic integration', () => {
       ],
       notExpectErrors: [],
     },
-    'schema constructed from type with nested type array and customizer, respecting groups (negative)': {
-      type: TypeWithNestedTypeArrayAndCustomizer,
-      opts: { group: 'group1' },
-      payload: {
-        nestedProp: [],
+    'schema constructed from type with nested type array and customizer, respecting groups (negative)':
+      {
+        type: TypeWithNestedTypeArrayAndCustomizer,
+        opts: { group: 'group1' },
+        payload: {
+          nestedProp: [],
+        },
+        expectErrors: ['"nestedProp" does not contain 1 required value'],
+        notExpectErrors: [],
       },
-      expectErrors: ['"nestedProp" does not contain 1 required value'],
-      notExpectErrors: [],
-    },
-    'schema constructed from type with nested type array and customizer, respecting groups (positive)': {
-      type: TypeWithNestedTypeArrayAndCustomizer,
-      opts: { group: 'group1' },
-      payload: {
-        nestedProp: [
-          {
-            prop1: 'basic_prop1_group1',
-            prop2: 'basic_prop2_group1',
-          },
-        ],
+    'schema constructed from type with nested type array and customizer, respecting groups (positive)':
+      {
+        type: TypeWithNestedTypeArrayAndCustomizer,
+        opts: { group: 'group1' },
+        payload: {
+          nestedProp: [
+            {
+              prop1: 'basic_prop1_group1',
+              prop2: 'basic_prop2_group1',
+            },
+          ],
+        },
+        expectErrors: [],
+        notExpectErrors: ['"nestedProp"'],
       },
-      expectErrors: [],
-      notExpectErrors: ['"nestedProp"'],
-    },
     'nothing: empty schema without @JoiSchema': {
       type: EmptyType,
       opts: {},
@@ -693,12 +702,16 @@ describe('basic integration', () => {
               throw new Error('should not be thrown');
             }
           } catch (error) {
+            assert(error instanceof Error);
+
             error_ = error;
 
             if (expectErrors && expectErrors.length) {
+              // @ts-ignore
               expectErrors.map(x => expect(error.stack).toContain(x));
             }
             if (notExpectErrors && notExpectErrors.length) {
+              // @ts-ignore
               notExpectErrors.map(x => expect(error.stack).not.toContain(x));
             }
           }
