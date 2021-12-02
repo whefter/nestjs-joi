@@ -574,29 +574,31 @@ describe('basic integration', () => {
       ],
       notExpectErrors: [],
     },
-    'schema constructed from type with nested type array and array customizer, respecting groups (negative)': {
-      type: TypeWithNestedTypeArrayAndArrayCustomizer,
-      opts: { group: 'group1' },
-      payload: {
-        nestedProp: undefined,
+    'schema constructed from type with nested type array and array customizer, respecting groups (negative)':
+      {
+        type: TypeWithNestedTypeArrayAndArrayCustomizer,
+        opts: { group: 'group1' },
+        payload: {
+          nestedProp: undefined,
+        },
+        expectErrors: ['"nestedProp" is required'],
+        notExpectErrors: [],
       },
-      expectErrors: ['"nestedProp" is required'],
-      notExpectErrors: [],
-    },
-    'schema constructed from type with nested type array and array customizer, respecting groups (positive)': {
-      type: TypeWithNestedTypeArrayAndArrayCustomizer,
-      opts: { group: 'group1' },
-      payload: {
-        nestedProp: [
-          {
-            prop1: 'basic_prop1_group1',
-            prop2: 'basic_prop2_group1',
-          },
-        ],
+    'schema constructed from type with nested type array and array customizer, respecting groups (positive)':
+      {
+        type: TypeWithNestedTypeArrayAndArrayCustomizer,
+        opts: { group: 'group1' },
+        payload: {
+          nestedProp: [
+            {
+              prop1: 'basic_prop1_group1',
+              prop2: 'basic_prop2_group1',
+            },
+          ],
+        },
+        expectErrors: [],
+        notExpectErrors: ['"nestedProp"'],
       },
-      expectErrors: [],
-      notExpectErrors: ['"nestedProp"'],
-    },
     'schema constructed from type with nested type array and customizer (positive)': {
       type: TypeWithNestedTypeArrayAndCustomizer,
       opts: {},
@@ -623,29 +625,31 @@ describe('basic integration', () => {
       ],
       notExpectErrors: [],
     },
-    'schema constructed from type with nested type array and customizer, respecting groups (negative)': {
-      type: TypeWithNestedTypeArrayAndCustomizer,
-      opts: { group: 'group1' },
-      payload: {
-        nestedProp: [],
+    'schema constructed from type with nested type array and customizer, respecting groups (negative)':
+      {
+        type: TypeWithNestedTypeArrayAndCustomizer,
+        opts: { group: 'group1' },
+        payload: {
+          nestedProp: [],
+        },
+        expectErrors: ['"nestedProp" does not contain 1 required value'],
+        notExpectErrors: [],
       },
-      expectErrors: ['"nestedProp" does not contain 1 required value'],
-      notExpectErrors: [],
-    },
-    'schema constructed from type with nested type array and customizer, respecting groups (positive)': {
-      type: TypeWithNestedTypeArrayAndCustomizer,
-      opts: { group: 'group1' },
-      payload: {
-        nestedProp: [
-          {
-            prop1: 'basic_prop1_group1',
-            prop2: 'basic_prop2_group1',
-          },
-        ],
+    'schema constructed from type with nested type array and customizer, respecting groups (positive)':
+      {
+        type: TypeWithNestedTypeArrayAndCustomizer,
+        opts: { group: 'group1' },
+        payload: {
+          nestedProp: [
+            {
+              prop1: 'basic_prop1_group1',
+              prop2: 'basic_prop2_group1',
+            },
+          ],
+        },
+        expectErrors: [],
+        notExpectErrors: ['"nestedProp"'],
       },
-      expectErrors: [],
-      notExpectErrors: ['"nestedProp"'],
-    },
     'nothing: empty schema without @JoiSchema': {
       type: EmptyType,
       opts: {},

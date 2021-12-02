@@ -59,7 +59,7 @@
     "graphql-tools": "^8.2.0",
     "husky": "^4.3.0",
     "jest": "^26.4.2",
-    "jest-junit": "^10.0.0",
+    "jest-junit": "^13.0.0",
     "joi": "^17.2.1",
     "lint-staged": "^11.0.0",
     "lodash": "^4.17.21",
