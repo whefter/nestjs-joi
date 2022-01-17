@@ -214,6 +214,7 @@ Currently, the following options are available:
 - `defaultValidationOptions` (`Joi.ValidationOptions`) The default Joi validation options to pass to `.validate()`
   - **Default:** `{ abortEarly: false, allowUnknown: true }`
   - Note that validation options passed directly to a schema using `.prefs()` (or `.options()`) will **always** take precedence and can never be overridden with this option.
+- `skipErrorFormatting` (`boolean`) By default, `JoiPipe` returns a formatted readable error message. If you need to handle error message formatting setting this to `true` will return the original error. **Default:** `false`
 
 ### Injection-enabled mode: `JoiPipe` (`@Query(JoiPipe)`, `@Param(JoiPipe)`, ...)
 
