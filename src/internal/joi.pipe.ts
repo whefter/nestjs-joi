@@ -25,8 +25,12 @@ export interface JoiPipeOptions {
   group?: JoiValidationGroup;
   usePipeValidationException?: boolean;
   defaultValidationOptions?: Joi.ValidationOptions;
+  skipErrorFormatting?: boolean;
 }
-type ValidatedJoiPipeOptions = SetRequired<JoiPipeOptions, 'usePipeValidationException'>;
+type ValidatedJoiPipeOptions = SetRequired<
+  JoiPipeOptions,
+  'usePipeValidationException' | 'skipErrorFormatting'
+>;
 
 const DEFAULT_JOI_OPTS: Joi.ValidationOptions = {
   abortEarly: false,
@@ -36,6 +40,7 @@ const DEFAULT_JOI_PIPE_OPTS: ValidatedJoiPipeOptions = {
   group: undefined,
   usePipeValidationException: false,
   defaultValidationOptions: DEFAULT_JOI_OPTS,
+  skipErrorFormatting: false,
 };
 const JOI_PIPE_OPTS_KEYS = Object.keys(DEFAULT_JOI_PIPE_OPTS);
 
@@ -109,6 +114,7 @@ export class JoiPipe implements PipeTransform {
       payload,
       schema,
       this.pipeOpts.usePipeValidationException,
+      this.pipeOpts.skipErrorFormatting,
       // It is technically impossible for this to be undefined since it is explicitely assigned
       // with a default value in parseOptions(), so it is almost impossible to test.
       /* istanbul ignore next */
@@ -124,6 +130,7 @@ export class JoiPipe implements PipeTransform {
     payload: unknown,
     schema: Joi.Schema,
     usePipeValidationException: boolean,
+    skipErrorFormatting: boolean,
     validationOptions: Joi.ValidationOptions,
     /* istanbul ignore next */
     metadata: ArgumentMetadata = { type: 'custom' },
@@ -142,14 +149,16 @@ export class JoiPipe implements PipeTransform {
         const reasons = error.details
           .map((detail: { message: string }) => detail.message)
           .join(', ');
-        const message =
+        const formattedMessage =
           `Request validation of ${metadata.type} ` +
           (metadata.data ? `item '${metadata.data}' ` : '') +
           `failed, because: ${reasons}`;
         if (usePipeValidationException) {
-          throw new JoiPipeValidationException(message);
+          throw new JoiPipeValidationException(
+            skipErrorFormatting ? error.message : formattedMessage,
+          );
         } else {
-          throw new BadRequestException(message);
+          throw new BadRequestException(skipErrorFormatting ? error : formattedMessage);
         }
       } else {
         // If error is not a validation error, it is probably a custom error thrown by the schema.
@@ -202,6 +211,12 @@ export class JoiPipe implements PipeTransform {
       !(typeof pipeOpts.usePipeValidationException === 'boolean')
     ) {
       errors.push(`'usePipeValidationException' must be a boolean`);
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(pipeOpts, 'skipErrorFormatting') &&
+      !(typeof pipeOpts.skipErrorFormatting === 'boolean')
+    ) {
+      errors.push(`'skipErrorFormatting' must be a boolean`);
     }
 
     if (errors.length) {
