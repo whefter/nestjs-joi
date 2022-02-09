@@ -242,6 +242,17 @@ describe('JoiPipe', () => {
         }
       });
 
+      it('should format error when not configured explicitly', async () => {
+        const pipe = new JoiPipe();
+
+        try {
+          pipe.transform(1, { type: 'query', metatype });
+          throw new Error('should not be thrown');
+        } catch (error) {
+          expect(error.message).toContain('Request validation of');
+        }
+      });
+
       it('should throw a JoiPipeValidationException but not format error when configured explicitly', async () => {
         const pipe = new JoiPipe({ skipErrorFormatting: true, usePipeValidationException: true });
 
@@ -680,6 +691,17 @@ describe('JoiPipe', () => {
         }
       });
 
+      it('should format error when not configured explicitly', async () => {
+        const pipe = new JoiPipe();
+
+        try {
+          pipe.transform(1, { type: 'query', metatype });
+          throw new Error('should not be thrown');
+        } catch (error) {
+          expect(error.message).toContain('Request validation of');
+        }
+      });
+
       it('should throw a JoiPipeValidationException but not format error when configured explicitly', async () => {
         const pipe = new JoiPipe(metatype, {
           skipErrorFormatting: true,
@@ -936,6 +958,17 @@ describe('JoiPipe', () => {
               throw new Error('should not be thrown');
             } catch (error) {
               expect(error.message).not.toContain('Request validation of');
+            }
+          });
+
+          it('should format error when not configured explicitly', async () => {
+            const pipe = new JoiPipe();
+
+            try {
+              pipe.transform(1, { type: 'query', metatype });
+              throw new Error('should not be thrown');
+            } catch (error) {
+              expect(error.message).toContain('Request validation of');
             }
           });
 
