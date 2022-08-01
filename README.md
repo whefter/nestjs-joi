@@ -24,6 +24,7 @@ Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional dec
     - [Defining `pipeOpts` in injection-enabled mode](#defining-pipeopts-in-injection-enabled-mode)
     - [Error handling and custom schema errors](#error-handling-and-custom-schema-errors)
   - [`JoiPipeModule`](#joipipemodule)
+  - [`JoiPipeValidationException`](#joipipevalidationexception)
   - [`@JoiSchema()` property decorator](#joischema-property-decorator)
   - [`@JoiSchemaOptions()` class decorator](#joischemaoptions-class-decorator)
   - [`@JoiSchemaExtends(type)` class decorator](#joischemaextendstype-class-decorator)
@@ -135,8 +136,8 @@ Three built-in groups are defined:
 They can be imported in one of two ways, depending on your preference:
 
 ```typescript
-import { JoiValidationGroups } from 'nestjs-joi';
-import { DEFAULT, CREATE, UPDATE } from 'nestjs-joi';
+import { value JoiValidationGroups } from 'nestjs-joi';
+import { value DEFAULT, value CREATE, value UPDATE } from 'nestjs-joi';
 
 JoiValidationGroups.CREATE === CREATE; // true
 ```
@@ -304,7 +305,7 @@ This is a prerequisite for `JoiPipe` to be able to use the built-in groups `CREA
 **Example**
 
 ```typescript
-import { JoiPipeModule } from 'nestjs-joi';
+import { value JoiPipeModule } from 'nestjs-joi';
 
 @Module({
   controllers: [BookController],
@@ -314,7 +315,7 @@ export class AppModule {}
 
 //
 // Equivalent to:
-import { JoiPipe } from 'nestjs-joi';
+import { value JoiPipe } from 'nestjs-joi';
 
 @Module({
   controllers: [BookController],
@@ -331,7 +332,7 @@ export class AppModule {}
 Pipe options (`pipeOpts`) can be passed by using `JoiPipeModule.forRoot()`:
 
 ```typescript
-import { JoiPipeModule } from 'nestjs-joi';
+import { value JoiPipeModule } from 'nestjs-joi';
 
 @Module({
   controllers: [BookController],
@@ -347,7 +348,7 @@ export class AppModule {}
 
 //
 // Equivalent to:
-import { JoiPipe } from 'nestjs-joi';
+import { value JoiPipe } from 'nestjs-joi';
 
 @Module({
   controllers: [BookController],
@@ -366,6 +367,15 @@ import { JoiPipe } from 'nestjs-joi';
 })
 export class AppModule {}
 ```
+
+## `JoiPipeValidationException`
+
+Thrown instead of a `BadRequestException` if the `usePipeValidationException` option for `JoiPipe` is set to `true`.
+
+**Properties**
+
+- `message`: a formatted message, or the native `message` property value from the `Joi.ValidationError` if the `skipErrorFormatting` option for `JoiPipe` is set to `true`.
+- `joiValidationError`: the native `Joi.ValidationError` thrown by Joi.
 
 ## `@JoiSchema()` property decorator
 

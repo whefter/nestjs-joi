@@ -156,6 +156,7 @@ export class JoiPipe implements PipeTransform {
         if (usePipeValidationException) {
           throw new JoiPipeValidationException(
             skipErrorFormatting ? error.message : formattedMessage,
+            error,
           );
         } else {
           throw new BadRequestException(skipErrorFormatting ? error : formattedMessage);

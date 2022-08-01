@@ -205,6 +205,9 @@ describe('JoiPipe', () => {
           throw new Error('should not be thrown');
         } catch (error) {
           expect(error instanceof JoiPipeValidationException).toBeTruthy();
+          expect(
+            Joi.isError((error as JoiPipeValidationException).joiValidationError),
+          ).toBeTruthy();
         }
       });
 
@@ -262,6 +265,9 @@ describe('JoiPipe', () => {
         } catch (error) {
           expect(error.message).not.toContain('Request validation of');
           expect(error instanceof JoiPipeValidationException).toBeTruthy();
+          expect(
+            Joi.isError((error as JoiPipeValidationException).joiValidationError),
+          ).toBeTruthy();
         }
       });
 
@@ -450,6 +456,9 @@ describe('JoiPipe', () => {
           throw new Error('should not be thrown');
         } catch (error) {
           expect(error instanceof JoiPipeValidationException).toBeTruthy();
+          expect(
+            Joi.isError((error as JoiPipeValidationException).joiValidationError),
+          ).toBeTruthy();
         }
       });
 
@@ -498,6 +507,9 @@ describe('JoiPipe', () => {
           throw new Error('should not be thrown');
         } catch (error) {
           expect(error.message).not.toContain('Request validation of');
+          expect(
+            Joi.isError((error as JoiPipeValidationException).joiValidationError),
+          ).toBeTruthy();
         }
       });
 
@@ -654,6 +666,9 @@ describe('JoiPipe', () => {
           throw new Error('should not be thrown');
         } catch (error) {
           expect(error instanceof JoiPipeValidationException).toBeTruthy();
+          expect(
+            Joi.isError((error as JoiPipeValidationException).joiValidationError),
+          ).toBeTruthy();
         }
       });
 
@@ -713,6 +728,9 @@ describe('JoiPipe', () => {
           throw new Error('should not be thrown');
         } catch (error) {
           expect(error.message).not.toContain('Request validation of');
+          expect(
+            Joi.isError((error as JoiPipeValidationException).joiValidationError),
+          ).toBeTruthy();
         }
       });
 
@@ -924,6 +942,9 @@ describe('JoiPipe', () => {
               throw new Error('should not be thrown');
             } catch (error) {
               expect(error instanceof JoiPipeValidationException).toBeTruthy();
+              expect(
+                Joi.isError((error as JoiPipeValidationException).joiValidationError),
+              ).toBeTruthy();
             }
           });
 
@@ -983,6 +1004,9 @@ describe('JoiPipe', () => {
               throw new Error('should not be thrown');
             } catch (error) {
               expect(error.message).not.toContain('Request validation of');
+              expect(
+                Joi.isError((error as JoiPipeValidationException).joiValidationError),
+              ).toBeTruthy();
             }
           });
 

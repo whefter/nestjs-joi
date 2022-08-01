@@ -1,3 +1,4 @@
+import * as Joi from 'joi';
 import { DEFAULT } from 'joi-class-decorators';
 
 export const JoiValidationGroups = {
@@ -17,4 +18,8 @@ export interface Constructor<T = any> extends Function {
 }
 
 export const JOIPIPE_OPTIONS = Symbol('JOIPIPE_OPTIONS');
-export class JoiPipeValidationException extends Error {}
+export class JoiPipeValidationException extends Error {
+  constructor(message: string, readonly joiValidationError: Joi.ValidationError) {
+    super(message);
+  }
+}
