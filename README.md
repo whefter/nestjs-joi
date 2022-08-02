@@ -28,6 +28,7 @@ Easy to use `JoiPipe` as an interface between `joi` and NestJS with optional dec
   - [`@JoiSchema()` property decorator](#joischema-property-decorator)
   - [`@JoiSchemaOptions()` class decorator](#joischemaoptions-class-decorator)
   - [`@JoiSchemaExtends(type)` class decorator](#joischemaextendstype-class-decorator)
+  - [`@JoiSchemaCustomization(callback)` class decorator](#joischemacustomizationcallback-class-decorator)
   - [`getClassSchema(typeClass, opts?: { group? })` (alias: `getTypeSchema()`)](#getclassschematypeclass-opts--group--alias-gettypeschema)
 
 # Installation
@@ -394,6 +395,12 @@ Assign the passed Joi _options_ to be passed to `.options()` on the full constru
 Specify an alternative extended class for schema construction. `type` must be a class constructor.
 
 [**API documentation in `joi-class-decorators` repository.**](https://github.com/whefter/joi-class-decorators#joischemaextendstype-class-decorator)
+
+## `@JoiSchemaCustomization(callback)` class decorator
+
+Specify a customization function for the final constructed type schema. `callback` must be a function that takes a schema and returns a modified schema.
+
+[**API documentation in `joi-class-decorators` repository.**](https://github.com/whefter/joi-class-decorators#joischemacustomization-class-decorator)
 
 ## `getClassSchema(typeClass, opts?: { group? })` (alias: `getTypeSchema()`)
 

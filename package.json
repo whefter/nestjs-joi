@@ -31,7 +31,7 @@
   "types": "index.d.ts",
   "typings": "index.d.ts",
   "dependencies": {
-    "joi-class-decorators": "^1.0.3"
+    "joi-class-decorators": "^1.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
