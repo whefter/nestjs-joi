@@ -59,7 +59,11 @@ describe('JoiPipe', () => {
           new JoiPipe(...args);
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(withMessage);
+          if (error instanceof Error) {
+            expect(error.message).toContain(withMessage);
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
     }
@@ -113,9 +117,13 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(
-            'Request validation of query failed, because: "value" must be of type object',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toContain(
+              'Request validation of query failed, because: "value" must be of type object',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -137,9 +145,13 @@ describe('JoiPipe', () => {
           pipe.transform({}, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(
-            'Request validation of query failed, because: "prop" is required',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toContain(
+              'Request validation of query failed, because: "prop" is required',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -150,7 +162,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', data: 'foo', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(`Request validation of query item 'foo' failed`);
+          if (error instanceof Error) {
+            expect(error.message).toContain(`Request validation of query item 'foo' failed`);
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -218,8 +234,12 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: '-' }, { type: 'query', metatype: errorMetatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toBe('custom message');
-          expect(error instanceof CustomError).toBeTruthy();
+          if (error instanceof Error) {
+            expect(error.message).toBe('custom message');
+            expect(error instanceof CustomError).toBeTruthy();
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -230,7 +250,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain('Request validation of');
+          if (error instanceof Error) {
+            expect(error.message).toContain('Request validation of');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -241,7 +265,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).not.toContain('Request validation of');
+          if (error instanceof Error) {
+            expect(error.message).not.toContain('Request validation of');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -252,7 +280,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain('Request validation of');
+          if (error instanceof Error) {
+            expect(error.message).toContain('Request validation of');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -263,11 +295,15 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).not.toContain('Request validation of');
-          expect(error instanceof JoiPipeValidationException).toBeTruthy();
-          expect(
-            Joi.isError((error as JoiPipeValidationException).joiValidationError),
-          ).toBeTruthy();
+          if (error instanceof Error) {
+            expect(error.message).not.toContain('Request validation of');
+            expect(error instanceof JoiPipeValidationException).toBeTruthy();
+            expect(
+              Joi.isError((error as JoiPipeValidationException).joiValidationError),
+            ).toBeTruthy();
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -314,9 +350,13 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toBe(
-            'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toBe(
+              'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -359,9 +399,13 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(
-            'Request validation of query failed, because: "value" must be a string',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toContain(
+              'Request validation of query failed, because: "value" must be a string',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -388,9 +432,13 @@ describe('JoiPipe', () => {
           pipe.transform({}, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(
-            'Request validation of query failed, because: "one" is required, "two" is required',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toContain(
+              'Request validation of query failed, because: "one" is required, "two" is required',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -401,7 +449,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', data: 'foo' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(`Request validation of query item 'foo' failed`);
+          if (error instanceof Error) {
+            expect(error.message).toContain(`Request validation of query item 'foo' failed`);
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -469,8 +521,12 @@ describe('JoiPipe', () => {
           pipe.transform('-', { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toBe('custom message');
-          expect(error instanceof CustomError).toBeTruthy();
+          if (error instanceof Error) {
+            expect(error.message).toBe('custom message');
+            expect(error instanceof CustomError).toBeTruthy();
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -481,7 +537,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain('Request validation of');
+          if (error instanceof Error) {
+            expect(error.message).toContain('Request validation of');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -492,7 +552,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).not.toContain('Request validation of');
+          if (error instanceof Error) {
+            expect(error.message).not.toContain('Request validation of');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -506,10 +570,14 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).not.toContain('Request validation of');
-          expect(
-            Joi.isError((error as JoiPipeValidationException).joiValidationError),
-          ).toBeTruthy();
+          if (error instanceof Error) {
+            expect(error.message).not.toContain('Request validation of');
+            expect(
+              Joi.isError((error as JoiPipeValidationException).joiValidationError),
+            ).toBeTruthy();
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -557,9 +625,13 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toBe(
-            'Request validation of query failed, because: "prop" must be a number',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toBe(
+              'Request validation of query failed, because: "prop" must be a number',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
     });
@@ -574,9 +646,13 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(
-            'Request validation of query failed, because: "value" must be of type object',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toContain(
+              'Request validation of query failed, because: "value" must be of type object',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -598,9 +674,13 @@ describe('JoiPipe', () => {
           pipe.transform({}, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(
-            'Request validation of query failed, because: "prop" is required',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toContain(
+              'Request validation of query failed, because: "prop" is required',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -611,7 +691,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', data: 'foo' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(`Request validation of query item 'foo' failed`);
+          if (error instanceof Error) {
+            expect(error.message).toContain(`Request validation of query item 'foo' failed`);
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -679,8 +763,12 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: '-' }, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toBe('custom message');
-          expect(error instanceof CustomError).toBeTruthy();
+          if (error instanceof Error) {
+            expect(error.message).toBe('custom message');
+            expect(error instanceof CustomError).toBeTruthy();
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -691,7 +779,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain('Request validation of');
+          if (error instanceof Error) {
+            expect(error.message).toContain('Request validation of');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -702,7 +794,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).not.toContain('Request validation of');
+          if (error instanceof Error) {
+            expect(error.message).not.toContain('Request validation of');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -713,7 +809,11 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query', metatype });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain('Request validation of');
+          if (error instanceof Error) {
+            expect(error.message).toContain('Request validation of');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -727,10 +827,14 @@ describe('JoiPipe', () => {
           pipe.transform(1, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).not.toContain('Request validation of');
-          expect(
-            Joi.isError((error as JoiPipeValidationException).joiValidationError),
-          ).toBeTruthy();
+          if (error instanceof Error) {
+            expect(error.message).not.toContain('Request validation of');
+            expect(
+              Joi.isError((error as JoiPipeValidationException).joiValidationError),
+            ).toBeTruthy();
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -777,9 +881,13 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toBe(
-            'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toBe(
+              'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -790,9 +898,13 @@ describe('JoiPipe', () => {
           pipe.transform({ prop: 'value' }, { type: 'query' });
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain(
-            'Request validation of query failed, because: "prop" is not allowed',
-          );
+          if (error instanceof Error) {
+            expect(error.message).toContain(
+              'Request validation of query failed, because: "prop" is not allowed',
+            );
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
 
@@ -846,7 +958,11 @@ describe('JoiPipe', () => {
               pipe.transform({ prop: 'foo' }, { type: 'query', metatype: httpMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
-              expect(error.message).not.toBe('should not be thrown');
+              if (error instanceof Error) {
+                expect(error.message).not.toBe('should not be thrown');
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           });
 
@@ -868,9 +984,13 @@ describe('JoiPipe', () => {
               pipe.transform({ prop: 'foo' }, { type: 'query', metatype: httpMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
-              expect(error.message).toContain(
-                `Request validation of query failed, because: "prop" must be [${value}]`,
-              );
+              if (error instanceof Error) {
+                expect(error.message).toContain(
+                  `Request validation of query failed, because: "prop" must be [${value}]`,
+                );
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           });
 
@@ -881,7 +1001,11 @@ describe('JoiPipe', () => {
               pipe.transform(1, { type: 'query', data: 'foo', metatype: httpMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
-              expect(error.message).toContain(`Request validation of query item 'foo' failed`);
+              if (error instanceof Error) {
+                expect(error.message).toContain(`Request validation of query item 'foo' failed`);
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           });
 
@@ -955,8 +1079,12 @@ describe('JoiPipe', () => {
               pipe.transform({ prop: '-' }, { type: 'query', metatype: errorMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
-              expect(error.message).toBe('custom message');
-              expect(error instanceof CustomError).toBeTruthy();
+              if (error instanceof Error) {
+                expect(error.message).toBe('custom message');
+                expect(error instanceof CustomError).toBeTruthy();
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           });
 
@@ -967,7 +1095,11 @@ describe('JoiPipe', () => {
               pipe.transform(1, { type: 'query', metatype: httpMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
-              expect(error.message).toContain('Request validation of');
+              if (error instanceof Error) {
+                expect(error.message).toContain('Request validation of');
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           });
 
@@ -978,7 +1110,11 @@ describe('JoiPipe', () => {
               pipe.transform(1, { type: 'query', metatype: httpMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
-              expect(error.message).not.toContain('Request validation of');
+              if (error instanceof Error) {
+                expect(error.message).not.toContain('Request validation of');
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           });
 
@@ -989,7 +1125,11 @@ describe('JoiPipe', () => {
               pipe.transform(1, { type: 'query', metatype });
               throw new Error('should not be thrown');
             } catch (error) {
-              expect(error.message).toContain('Request validation of');
+              if (error instanceof Error) {
+                expect(error.message).toContain('Request validation of');
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           });
 
@@ -1003,10 +1143,14 @@ describe('JoiPipe', () => {
               pipe.transform(1, { type: 'query', metatype: httpMetatype });
               throw new Error('should not be thrown');
             } catch (error) {
-              expect(error.message).not.toContain('Request validation of');
-              expect(
-                Joi.isError((error as JoiPipeValidationException).joiValidationError),
-              ).toBeTruthy();
+              if (error instanceof Error) {
+                expect(error.message).not.toContain('Request validation of');
+                expect(
+                  Joi.isError((error as JoiPipeValidationException).joiValidationError),
+                ).toBeTruthy();
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           });
 
@@ -1062,9 +1206,13 @@ describe('JoiPipe', () => {
               pipe.transform({ prop: 'a', unknownProp: 1 }, { type: 'query', metatype });
               throw new Error('should not be thrown');
             } catch (error) {
-              expect(error.message).toBe(
-                'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
-              );
+              if (error instanceof Error) {
+                expect(error.message).toBe(
+                  'Request validation of query failed, because: "prop" must be a number, "unknownProp" is not allowed',
+                );
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           });
 

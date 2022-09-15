@@ -50,7 +50,11 @@ describe('request injection', () => {
         );
         throw new Error('should not be thrown');
       } catch (error) {
-        expect(error.message).toContain('"prop" must be a number');
+        if (error instanceof Error) {
+          expect(error.message).toContain('"prop" must be a number');
+        } else {
+          throw new Error('caught unexpected error type');
+        }
       }
     });
   });
@@ -93,7 +97,11 @@ describe('request injection', () => {
           );
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain('"prop" must be a symbol');
+          if (error instanceof Error) {
+            expect(error.message).toContain('"prop" must be a symbol');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
     });
@@ -138,7 +146,11 @@ describe('request injection', () => {
           );
           throw new Error('should not be thrown');
         } catch (error) {
-          expect(error.message).toContain('"prop" must be a string');
+          if (error instanceof Error) {
+            expect(error.message).toContain('"prop" must be a string');
+          } else {
+            throw new Error('caught unexpected error type');
+          }
         }
       });
     });

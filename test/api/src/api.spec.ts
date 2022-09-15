@@ -64,8 +64,12 @@ describe('API', () => {
 
     try {
       new API.JoiPipe();
-    } catch (err) {
-      throw new Error(`API.JoiPipe is not constructible: ${err.message}`);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`API.JoiPipe is not constructible: ${error.message}`);
+      } else {
+        throw new Error('caught unexpected error type');
+      }
     }
   });
 
@@ -74,8 +78,12 @@ describe('API', () => {
 
     try {
       new API.JoiPipeModule();
-    } catch (err) {
-      throw new Error(`API.JoiPipeModule is not constructible: ${err.message}`);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`API.JoiPipeModule is not constructible: ${error.message}`);
+      } else {
+        throw new Error('caught unexpected error type');
+      }
     }
   });
 

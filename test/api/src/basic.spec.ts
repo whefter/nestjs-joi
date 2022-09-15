@@ -42,7 +42,11 @@ describe('basic integration', () => {
         );
         throw new Error('should not be thrown');
       } catch (error) {
-        expect(error.message).toContain('"prop" must be a string');
+        if (error instanceof Error) {
+          expect(error.message).toContain('"prop" must be a string');
+        } else {
+          throw new Error('caught unexpected error type');
+        }
       }
     });
 
@@ -86,7 +90,11 @@ describe('basic integration', () => {
         );
         throw new Error('should not be thrown');
       } catch (error) {
-        expect(error.message).toContain('"prop" must be a string');
+        if (error instanceof Error) {
+          expect(error.message).toContain('"prop" must be a string');
+        } else {
+          throw new Error('caught unexpected error type');
+        }
       }
     });
 
@@ -111,7 +119,11 @@ describe('basic integration', () => {
         );
         throw new Error('should not be thrown');
       } catch (error) {
-        expect(error.message).toContain('"prop" must be a string');
+        if (error instanceof Error) {
+          expect(error.message).toContain('"prop" must be a string');
+        } else {
+          throw new Error('caught unexpected error type');
+        }
       }
     });
   });
@@ -700,10 +712,22 @@ describe('basic integration', () => {
             error_ = error;
 
             if (expectErrors && expectErrors.length) {
-              expectErrors.map(x => expect(error.stack).toContain(x));
+              if (error instanceof Error) {
+                for (const expectError of expectErrors) {
+                  expect(error.stack).toContain(expectError);
+                }
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
             if (notExpectErrors && notExpectErrors.length) {
-              notExpectErrors.map(x => expect(error.stack).not.toContain(x));
+              if (error instanceof Error) {
+                for (const notExpectError of notExpectErrors) {
+                  expect(error.stack).not.toContain(notExpectError);
+                }
+              } else {
+                throw new Error('caught unexpected error type');
+              }
             }
           }
 
