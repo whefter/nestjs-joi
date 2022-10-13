@@ -12,6 +12,7 @@ export {
   getClassSchema,
   getTypeSchema,
   JoiSchema,
+  JoiSchemaCustomization,
   JoiSchemaExtends,
   JoiSchemaOptions,
   JoiValidationGroup,

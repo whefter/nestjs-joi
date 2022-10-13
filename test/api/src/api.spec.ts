@@ -22,6 +22,7 @@ describe('API', () => {
         'getTypeSchema',
         'getClassSchema',
         'JoiSchema',
+        'JoiSchemaCustomization',
         'JoiSchemaExtends',
         'JoiSchemaOptions',
       ].sort(),
