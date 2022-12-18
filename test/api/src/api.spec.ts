@@ -2,6 +2,7 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
 import * as API from 'nestjs-joi';
+import * as MicroserviceSubAPI from 'nestjs-joi/microservice';
 
 describe('API', () => {
   it('should not have any unexpected exports', async () => {
@@ -106,5 +107,17 @@ describe('API', () => {
 
   it('should export a JoiSchemaOptions decorator', async () => {
     expect(typeof API.JoiSchemaOptions).toBe('function');
+  });
+});
+
+describe('Subfolder API: microservice/', () => {
+  it('should not have any unexpected exports', async () => {
+    expect(Object.keys(MicroserviceSubAPI).sort()).toEqual(
+      ['JoiPipeValidationRpcExceptionFilter'].sort(),
+    );
+  });
+  it('should export a JoiPipeValidationRpcExceptionFilter', async () => {
+    expect(MicroserviceSubAPI.JoiPipeValidationRpcExceptionFilter).toBeDefined();
+    expect(typeof MicroserviceSubAPI.JoiPipeValidationRpcExceptionFilter).toBe('function');
   });
 });
