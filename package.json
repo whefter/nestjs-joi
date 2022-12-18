@@ -42,6 +42,7 @@
     "@nestjs/common": "^9.0.11",
     "@nestjs/core": "^9.0.11",
     "@nestjs/graphql": "^9.1.2",
+    "@nestjs/microservices": "^9.1.2",
     "@nestjs/platform-express": "^9.0.11",
     "@nestjs/testing": "^9.0.11",
     "@types/eslint": "^7.2.6",

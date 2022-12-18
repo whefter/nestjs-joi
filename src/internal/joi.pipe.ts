@@ -53,6 +53,18 @@ function isHttpRequest(req: any): req is { method: string } {
 function isGraphQlRequest(req: any): req is { req: { method: string } } {
   return req && 'req' in req && typeof req.req === 'object' && 'method' in req.req;
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isMicroserviceRequest(req: any): req is {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  pattern: string | Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+  context: typeof Object.prototype;
+} {
+  return (
+    req && 'pattern' in req && 'data' in req && 'context' in req && req.context instanceof Object
+  );
+}
 
 @Injectable({ scope: Scope.REQUEST })
 export class JoiPipe implements PipeTransform {
@@ -81,6 +93,13 @@ export class JoiPipe implements PipeTransform {
         // such as UPDATE group schemas being ignored, we will NOT set the method.
         // JoiPipe will work for this case, but ignore the method.
         // this.method = arg.req.method.toUpperCase();
+      } else if (isMicroserviceRequest(arg)) {
+        // Microservices do not use methods and have many different use cases, so
+        // similarily to the GraphQL case, JoiPipe will work for this case,
+        // but ignore anything other than the payload.
+        // A future version might use the validation groups to decide
+        // what to do based on the {cmd:''}, for example, although that
+        // still leaves other transports.
       } else {
         // This is the "manually called constructor" case, where performance is
         // (ostensibly) not as big of a concern since manual JoiPipes will be

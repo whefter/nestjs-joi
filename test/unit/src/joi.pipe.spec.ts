@@ -83,6 +83,11 @@ describe('JoiPipe', () => {
     });
     accept('HTTP Request', { method: 'get' });
     accept('GraphQL Request', { req: { method: 'get' } });
+    accept('Microservice Request', {
+      pattern: { cmd: 'cmd' },
+      data: { param: 'val' },
+      context: {},
+    });
 
     describe('(pipe options)', () => {
       accept('{ group: string }', { group: 'group' });
