@@ -115,6 +115,14 @@ If you want to make sure a validation group is used for a specific resolver muta
 
 To work around the issue of `OmitType()` etc. breaking the inheritance chain for schema building, see `@JoiSchemaExtends()` below.
 
+## A note on `@nestjs/microservice`
+
+This module can be used with `@nestjs/microservice`, but with some caveats:
+
+1. `JoiPipe` will **not** throw an `RpcException`. It will either throw the usual `BadRequestException` (like for HTTP/GraphQL) or, if you set `usePipeValidationException` to `true`, a `JoiPipeValidationException` (detailed further below). As a result, when you use a `ClientProxy` to invoke a microservice method, NestJS will only return a generic `Internal server error` error object.
+   - **Why?** There are some cases in which it is now possible to reliably determine if the current context is an RPC context (when the pipe instance is created with `new JoiPipe`). Handling the other cases, but not these, could potentially confuse users (why is this error generic here, but not there?). It is better to create a defined scenario (handle the error)
+   - **How to handle it**: To obtain and handle the actual exception, you can create an ExceptionFilter for either to handle them (e.g. with `@Catch()`) and turn them into an `RpcException`. You can use the provided `JoiPipeValidationRpcExceptionFilter` class or use it as an example. Don't forget to set `usePipeValidationException` to `true`.
+
 # Reference
 
 ## Validation groups
@@ -377,6 +385,16 @@ Thrown instead of a `BadRequestException` if the `usePipeValidationException` op
 
 - `message`: a formatted message, or the native `message` property value from the `Joi.ValidationError` if the `skipErrorFormatting` option for `JoiPipe` is set to `true`.
 - `joiValidationError`: the native `Joi.ValidationError` thrown by Joi.
+
+## `JoiPipeValidationRpcExceptionFilter`
+
+**Not exported from `nestjs-joi` to prevent a dependency on `@nestjs/microservice`!**
+
+```typescript
+import { JoiPipeValidationRpcExceptionFilter } from 'nestjs-joi/microservice';
+```
+
+Exception filter that can be used in a microservice module to catch `JoiPipeValidationException` exceptions and re-throw them as `RpcException`, preventing NestJS from swallowing it quietly and turning it into a generic "Internal server error". **Note** that the RpcException does not save over the stack trace.
 
 ## `@JoiSchema()` property decorator
 
