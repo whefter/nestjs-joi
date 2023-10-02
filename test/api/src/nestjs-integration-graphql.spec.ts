@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { INestApplication, UsePipes } from '@nestjs/common';
 import {
   Args,
@@ -100,8 +101,9 @@ describe('NestJS GraphQL integration', () => {
     beforeEach(async () => {
       module = await Test.createTestingModule({
         imports: [
-          GraphQLModule.forRoot({
+          GraphQLModule.forRoot<ApolloDriverConfig>({
             autoSchemaFile: true,
+            driver: ApolloDriver,
           }),
         ],
         providers: [EntityResolver],
@@ -211,8 +213,9 @@ describe('NestJS GraphQL integration', () => {
     beforeEach(async () => {
       module = await Test.createTestingModule({
         imports: [
-          GraphQLModule.forRoot({
+          GraphQLModule.forRoot<ApolloDriverConfig>({
             autoSchemaFile: true,
+            driver: ApolloDriver,
           }),
         ],
         providers: [EntityResolver],
@@ -285,8 +288,9 @@ describe('NestJS GraphQL integration', () => {
     beforeEach(async () => {
       module = await Test.createTestingModule({
         imports: [
-          GraphQLModule.forRoot({
+          GraphQLModule.forRoot<ApolloDriverConfig>({
             autoSchemaFile: true,
+            driver: ApolloDriver,
           }),
         ],
         providers: [EntityResolver],
