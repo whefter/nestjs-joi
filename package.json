@@ -31,7 +31,7 @@
   "types": "index.d.ts",
   "typings": "index.d.ts",
   "dependencies": {
-    "joi-class-decorators": "^1.1.0"
+    "joi-class-decorators": "^1.1.1"
   },
   "devDependencies": {
     "@apollo/server": "^4.9.1",
