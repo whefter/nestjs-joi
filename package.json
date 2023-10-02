@@ -35,8 +35,8 @@
   },
   "devDependencies": {
     "@apollo/server": "^4.9.1",
-    "@commitlint/cli": "^11.0.0",
-    "@commitlint/config-conventional": "^11.0.0",
+    "@commitlint/cli": "^17.7.2",
+    "@commitlint/config-conventional": "^17.7.0",
     "@elunic/ecs-prettier": "^0.2.1",
     "@elunic/ecs-tsconfig": "^0.1.1",
     "@elunic/eslint-config-ecs": "^0.1.10",
