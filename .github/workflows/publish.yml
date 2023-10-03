@@ -36,15 +36,15 @@ jobs:
     needs: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
       - run: npm install
       - run: npm run compile:dist
       - run: cp package.json README.md LICENSE dist/
-      - uses: JS-DevTools/npm-publish@v1
+      - uses: JS-DevTools/npm-publish@v2
         with:
           package: dist/package.json
           token: ${{ secrets.NPM_TOKEN }}
