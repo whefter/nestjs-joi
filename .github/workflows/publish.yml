@@ -8,28 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [ '16', '18', '20' ]
-    name: test on node ${{ matrix.node }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
-      - run: npm install
-      - name: Unit tests
-        run: npm run test:unit:once
-      - name: API tests
-        run: npm run test:api:once
-      - name: Coveralls (unit tests)
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
+    uses: ./.github/workflows/tests.yml
   publish:
     runs-on: ubuntu-latest
     name: publish
@@ -38,10 +17,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-      - run: npm install
+          node-version: '22.x'
+          cache: npm
+      - run: npm ci
       - run: npm run compile:dist
       - run: cp package.json README.md LICENSE dist/
       - uses: JS-DevTools/npm-publish@v2
