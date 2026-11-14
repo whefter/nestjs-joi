@@ -39,9 +39,15 @@ npm install --save nestjs-joi
 
 ## Peer dependencies
 
+Requires Node.js 22 or newer. Supports NestJS 7 to 12 and Joi 17 (>= 17.13.9) and 18 (>= 18.3.1).
+
 ```bash
-npm install --save @nestjs/common@^7 @nestjs/core@^7 joi@^17 reflect-metadata@^0.1
+npm install --save @nestjs/common @nestjs/core joi reflect-metadata
 ```
+
+NestJS 12 is published as ES modules only. `nestjs-joi` is CommonJS and loads it via `require()`, which works without flags from Node.js 22.12 on.
+
+`@nestjs/microservices` and `rxjs` are only needed when using `JoiPipeValidationRpcExceptionFilter` from `nestjs-joi/microservice`.
 
 # Usage
 

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable unused-imports/no-unused-vars-ts */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Controller, INestMicroservice, Module, UseFilters, UsePipes } from '@nestjs/common';
 import { ClientProxy, ClientsModule, MessagePattern, Transport } from '@nestjs/microservices';
@@ -8,6 +7,7 @@ import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';
 import { JoiPipe } from 'nestjs-joi';
 import { JoiPipeValidationRpcExceptionFilter } from 'nestjs-joi/microservice';
+import { lastValueFrom } from 'rxjs';
 
 describe('JoiPipeValidationRpcExceptionFilter functionality', () => {
   class metatype {
@@ -66,7 +66,7 @@ describe('JoiPipeValidationRpcExceptionFilter functionality', () => {
 
   it('should return an error object wth the Joi error message', async () => {
     try {
-      const result = await client.send({ cmd: 'test' }, { prop: 'duh' }).toPromise();
+      const result = await lastValueFrom(client.send({ cmd: 'test' }, { prop: 'duh' }));
       throw new Error('should not be thrown');
     } catch (error) {
       expect(error).toEqual({

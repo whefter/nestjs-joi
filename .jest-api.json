@@ -1,26 +1,18 @@
 {
-  "moduleFileExtensions": [
-    "js",
-    "json",
-    "ts"
-  ],
+  "moduleFileExtensions": ["js", "json", "ts"],
   "testEnvironment": "node",
   "testRegex": "test/api/.*\\.spec\\.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.(t|j)s$": [
+      "ts-jest",
+      {
+        "tsconfig": "<rootDir>/test/api/tsconfig.json"
+      }
+    ]
   },
-  "globals": {
-    "ts-jest": {
-      "tsconfig": "<rootDir>/test/api/tsconfig.json"
-    }
-  },
-  "setupFilesAfterEnv": [
-    "<rootDir>/test/api/setup.ts"
-  ],
+  "setupFilesAfterEnv": ["<rootDir>/test/api/setup.ts"],
   "moduleNameMapper": {
     "^nestjs-joi$": "<rootDir>/src/index",
-    "^nestjs-joi/(.*)$": [
-      "<rootDir>/src/$1"
-    ]
+    "^nestjs-joi/(.*)$": ["<rootDir>/src/$1"]
   }
 }

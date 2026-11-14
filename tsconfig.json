@@ -1,17 +1,30 @@
 {
-  "extends": "./node_modules/@elunic/ecs-tsconfig/tsconfig.json",
+  "extends": [
+    "@tsconfig/node22/tsconfig.json",
+    "@tsconfig/strictest/tsconfig.json"
+  ],
   "compilerOptions": {
     "outDir": "./dist",
-    "lib": [
-      "esnext"
+    "rootDir": ".",
+    "types": [
+      "node",
+      "jest"
     ],
-    "target": "es2015",
-    "skipLibCheck": true,
+    "declaration": true,
+    "sourceMap": true,
+    "noEmitOnError": true,
+    "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "useUnknownInCatchVariables": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "include": [
     "src/**/*.ts",
     "test/**/*.ts"
+  ],
+  "exclude": [
+    "test/api/**/*"
   ]
 }

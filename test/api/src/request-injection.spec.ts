@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable unused-imports/no-unused-vars-ts */
 
 import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';

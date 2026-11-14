@@ -1,24 +1,12 @@
 {
-  "extends": "../../node_modules/@elunic/ecs-tsconfig/tsconfig.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "lib": [
-      "esnext"
-    ],
-    "target": "es2015",
-    "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "baseUrl": "./",
+    "rootDir": "../..",
     "paths": {
-      "nestjs-joi": [
-        "../../src/"
-      ],
-      "nestjs-joi/*": [
-        "../../src/*"
-      ],
+      "nestjs-joi": ["../../src/"],
+      "nestjs-joi/*": ["../../src/*"]
     }
   },
-  "include": [
-    "**/*.ts"
-  ]
+  "include": ["**/*.ts"],
+  "exclude": []
 }

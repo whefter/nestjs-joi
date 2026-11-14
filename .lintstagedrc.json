@@ -1,5 +1,3 @@
 {
-  "{src,test}/**/*.{ts,js}": [
-    "eslint -c .eslintrc.fix.json --fix"
-  ]
+  "{src,test}/**/*.{ts,js}": "eslint --fix"
 }

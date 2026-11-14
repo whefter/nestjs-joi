@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable unused-imports/no-unused-vars-ts */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {
   Body,
@@ -17,7 +16,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';
 import { JoiPipe, JOIPIPE_OPTIONS, JoiPipeModule, JoiValidationGroups } from 'nestjs-joi';
-import * as request from 'supertest';
+import request from 'supertest';
 
 describe('NestJS integration', () => {
   class metatype {
@@ -82,22 +81,22 @@ describe('NestJS integration', () => {
           it('should use the pipe correctly (positive test)', async () => {
             return request(app.getHttpServer())
               .get('/?prop=foo')
-              .expect(res =>
+              .expect(res => {
                 expect(res.body).toEqual({
                   status: 'OK',
-                }),
-              );
+                });
+              });
           });
 
           it('should use the pipe correctly (negative test)', async () => {
             return request(app.getHttpServer())
               .get('/')
-              .expect(res =>
+              .expect(res => {
                 expect(res.body).toMatchObject({
                   statusCode: 400,
                   message: expect.stringContaining('"prop" is required'),
-                }),
-              );
+                });
+              });
           });
         });
 
@@ -106,23 +105,23 @@ describe('NestJS integration', () => {
             return request(app.getHttpServer())
               .post('/')
               .send({ prop: 1 })
-              .expect(res =>
+              .expect(res => {
                 expect(res.body).toEqual({
                   status: 'OK',
-                }),
-              );
+                });
+              });
           });
 
           it('should use the pipe correctly (negative test)', async () => {
             return request(app.getHttpServer())
               .post('/')
               .send({ prop: 'a' })
-              .expect(res =>
+              .expect(res => {
                 expect(res.body).toMatchObject({
                   statusCode: 400,
                   message: expect.stringContaining('"prop" must be a number'),
-                }),
-              );
+                });
+              });
           });
         });
 
@@ -131,23 +130,23 @@ describe('NestJS integration', () => {
             return request(app.getHttpServer())
               .put('/')
               .send({ prop: [] })
-              .expect(res =>
+              .expect(res => {
                 expect(res.body).toEqual({
                   status: 'OK',
-                }),
-              );
+                });
+              });
           });
 
           it('should use the pipe correctly (negative test)', async () => {
             return request(app.getHttpServer())
               .put('/')
               .send({ prop: 'a' })
-              .expect(res =>
+              .expect(res => {
                 expect(res.body).toMatchObject({
                   statusCode: 400,
                   message: expect.stringContaining('"prop" must be an array'),
-                }),
-              );
+                });
+              });
           });
         });
 
@@ -156,23 +155,23 @@ describe('NestJS integration', () => {
             return request(app.getHttpServer())
               .patch('/')
               .send({ prop: [] })
-              .expect(res =>
+              .expect(res => {
                 expect(res.body).toEqual({
                   status: 'OK',
-                }),
-              );
+                });
+              });
           });
 
           it('should use the pipe correctly (negative test)', async () => {
             return request(app.getHttpServer())
               .patch('/')
               .send({ prop: 'a' })
-              .expect(res =>
+              .expect(res => {
                 expect(res.body).toMatchObject({
                   statusCode: 400,
                   message: expect.stringContaining('"prop" must be an array'),
-                }),
-              );
+                });
+              });
           });
         });
       }
@@ -213,22 +212,22 @@ describe('NestJS integration', () => {
       it('should use the pipe correctly (positive test)', async () => {
         return request(app.getHttpServer())
           .get('/?prop=foo')
-          .expect(res =>
+          .expect(res => {
             expect(res.body).toEqual({
               status: 'OK',
-            }),
-          );
+            });
+          });
       });
 
       it('should use the pipe correctly (negative test)', async () => {
         return request(app.getHttpServer())
           .get('/')
-          .expect(res =>
+          .expect(res => {
             expect(res.body).toMatchObject({
               statusCode: 500,
               message: expect.stringContaining('Internal server error'),
-            }),
-          );
+            });
+          });
       });
     });
 
@@ -275,22 +274,22 @@ describe('NestJS integration', () => {
       it('should use the pipe correctly (positive test)', async () => {
         return request(app.getHttpServer())
           .get('/?prop=foo')
-          .expect(res =>
+          .expect(res => {
             expect(res.body).toEqual({
               status: 'OK',
-            }),
-          );
+            });
+          });
       });
 
       it('should use the pipe correctly (negative test)', async () => {
         return request(app.getHttpServer())
           .get('/')
-          .expect(res =>
+          .expect(res => {
             expect(res.body).toMatchObject({
               statusCode: 500,
               message: expect.stringContaining('Internal server error'),
-            }),
-          );
+            });
+          });
       });
     });
   });
@@ -322,22 +321,22 @@ describe('NestJS integration', () => {
       it('should use the pipe correctly (positive test)', async () => {
         return request(app.getHttpServer())
           .get('/?prop=foo')
-          .expect(res =>
+          .expect(res => {
             expect(res.body).toEqual({
               status: 'OK',
-            }),
-          );
+            });
+          });
       });
 
       it('should use the pipe correctly (negative test)', async () => {
         return request(app.getHttpServer())
           .get('/?prop=')
-          .expect(res =>
+          .expect(res => {
             expect(res.body).toMatchObject({
               statusCode: 400,
               message: expect.stringContaining('"prop" is not allowed to be empty'),
-            }),
-          );
+            });
+          });
       });
     });
   });
@@ -378,22 +377,22 @@ describe('NestJS integration', () => {
     it('should use the pipe correctly (positive test)', async () => {
       return request(app.getHttpServer())
         .get('/?prop=foo')
-        .expect(res =>
+        .expect(res => {
           expect(res.body).toEqual({
             status: 'OK',
-          }),
-        );
+          });
+        });
     });
 
     it('should use the pipe correctly (negative test)', async () => {
       return request(app.getHttpServer())
         .get('/?prop=')
-        .expect(res =>
+        .expect(res => {
           expect(res.body).toMatchObject({
             statusCode: 500,
             message: expect.stringContaining('Internal server error'),
-          }),
-        );
+          });
+        });
     });
   });
 });

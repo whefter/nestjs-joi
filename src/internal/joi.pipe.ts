@@ -10,9 +10,8 @@ import {
   Scope,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import * as Joi from 'joi';
+import Joi = require('joi');
 import { getTypeSchema, JoiValidationGroup } from 'joi-class-decorators';
-import { SetRequired } from 'type-fest';
 
 import {
   Constructor,
@@ -22,15 +21,13 @@ import {
 } from './defs';
 
 export interface JoiPipeOptions {
-  group?: JoiValidationGroup;
+  group?: JoiValidationGroup | undefined;
   usePipeValidationException?: boolean;
-  defaultValidationOptions?: Joi.ValidationOptions;
+  defaultValidationOptions?: Joi.ValidationOptions | undefined;
   skipErrorFormatting?: boolean;
 }
-type ValidatedJoiPipeOptions = SetRequired<
-  JoiPipeOptions,
-  'usePipeValidationException' | 'skipErrorFormatting'
->;
+type ValidatedJoiPipeOptions = JoiPipeOptions &
+  Required<Pick<JoiPipeOptions, 'usePipeValidationException' | 'skipErrorFormatting'>>;
 
 const DEFAULT_JOI_OPTS: Joi.ValidationOptions = {
   abortEarly: false,
@@ -45,19 +42,15 @@ const DEFAULT_JOI_PIPE_OPTS: ValidatedJoiPipeOptions = {
 const JOI_PIPE_OPTS_KEYS = Object.keys(DEFAULT_JOI_PIPE_OPTS);
 
 // TODO Check if there is a more efficient/reliable test for generic request objects
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access -- runtime guards over arbitrary injected values */
 function isHttpRequest(req: any): req is { method: string } {
   return req && 'method' in req;
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isGraphQlRequest(req: any): req is { req: { method: string } } {
   return req && 'req' in req && typeof req.req === 'object' && 'method' in req.req;
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isMicroserviceRequest(req: any): req is {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pattern: string | Record<string, any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   context: typeof Object.prototype;
 } {
@@ -65,6 +58,7 @@ function isMicroserviceRequest(req: any): req is {
     req && 'pattern' in req && 'data' in req && 'context' in req && req.context instanceof Object
   );
 }
+/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access */
 
 @Injectable({ scope: Scope.REQUEST })
 export class JoiPipe implements PipeTransform {
@@ -78,7 +72,7 @@ export class JoiPipe implements PipeTransform {
   constructor(type: Constructor, pipeOpts?: JoiPipeOptions);
   constructor(schema: Joi.Schema, pipeOpts?: JoiPipeOptions);
   constructor(
-    @Inject(REQUEST) private readonly arg?: unknown,
+    @Inject(REQUEST) arg?: unknown,
     @Optional() @Inject(JOIPIPE_OPTIONS) pipeOpts?: JoiPipeOptions,
   ) {
     if (arg) {
@@ -110,7 +104,7 @@ export class JoiPipe implements PipeTransform {
           this.type = arg as Constructor;
         } else {
           // Options passed as first parameter
-          pipeOpts = arg as JoiPipeOptions;
+          pipeOpts = arg;
         }
       }
     } else {
@@ -137,7 +131,7 @@ export class JoiPipe implements PipeTransform {
       // It is technically impossible for this to be undefined since it is explicitely assigned
       // with a default value in parseOptions(), so it is almost impossible to test.
       /* istanbul ignore next */
-      this.pipeOpts.defaultValidationOptions || DEFAULT_JOI_OPTS,
+      this.pipeOpts.defaultValidationOptions ?? DEFAULT_JOI_OPTS,
       metadata,
     );
   }
@@ -145,7 +139,7 @@ export class JoiPipe implements PipeTransform {
   // Called "validate" and NOT "transform", because that would make it match
   // the interface of a pipe INSTANCE and prevent NestJS from recognizing it as
   // a class constructor instead of an instance.
-  private static validate<T>(
+  private static validate(
     payload: unknown,
     schema: Joi.Schema,
     usePipeValidationException: boolean,
@@ -153,13 +147,14 @@ export class JoiPipe implements PipeTransform {
     validationOptions: Joi.ValidationOptions,
     /* istanbul ignore next */
     metadata: ArgumentMetadata = { type: 'custom' },
-  ): T {
-    const { error, value } = schema.validate(
+  ): unknown {
+    const result = schema.validate(
       payload,
       // This will always get overridden by whatever options have been specified
       // on the schema itself
       validationOptions,
     );
+    const { error } = result;
 
     if (error) {
       // Fixes #4
@@ -183,16 +178,17 @@ export class JoiPipe implements PipeTransform {
       } else {
         // If error is not a validation error, it is probably a custom error thrown by the schema.
         // Pass it through to allow it to be caught by custom error handlers.
+        // eslint-disable-next-line @typescript-eslint/only-throw-error -- typings claim ValidationError, but schemas may throw anything
         throw error;
       }
     }
 
     // Everything is fine
-    return value as T;
+    return result.value;
   }
 
   /**
-   * Efficient validation of pipeOpts
+   * Efficient validation of pipeOpts.
    *
    * @param pipeOpts Pipe options as passed in the constructor
    * @returns Validated options with default values applied
@@ -203,7 +199,7 @@ export class JoiPipe implements PipeTransform {
       {
         ...DEFAULT_JOI_PIPE_OPTS,
       },
-      pipeOpts || {},
+      pipeOpts ?? {},
     );
     // Nested merge of the Joi ValidationOptions.
     // TODO This could probably be combined with the above assignment in a deep merge.
@@ -211,7 +207,7 @@ export class JoiPipe implements PipeTransform {
       {
         ...DEFAULT_JOI_OPTS,
       },
-      pipeOpts.defaultValidationOptions || {},
+      pipeOpts.defaultValidationOptions ?? {},
     );
 
     const errors: string[] = [];
@@ -308,7 +304,10 @@ export class JoiPipe implements PipeTransform {
   private static getTypeSchema(
     type: Constructor,
     /* istanbul ignore next */
-    { forced, group }: { forced?: boolean; group?: JoiValidationGroup } = {},
+    {
+      forced,
+      group,
+    }: { forced?: boolean | undefined; group?: JoiValidationGroup | undefined } = {},
   ): Joi.Schema | undefined {
     // Do not validate basic inbuilt types. This is fast enough that we don't need
     // to cache the result.
@@ -333,7 +332,7 @@ export class JoiPipe implements PipeTransform {
     // The default behavior when no properties have attached schemas is to not
     // validate, otherwise we'd get errors for types with no decorators not intended
     // to be validated when used as global pipe
-    if ((!typeSchema || !Object.keys(typeSchema.describe().keys).length) && !forced) {
+    if (!Object.keys(typeSchema.describe()['keys'] as object).length && !forced) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.typeSchemaMap.get(type)!.set(cacheKey, undefined);
       return undefined;

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable unused-imports/no-unused-vars-ts */
-
 import { APP_PIPE } from '@nestjs/core';
 
 import { JoiPipe, JOIPIPE_OPTIONS, JoiPipeModule } from '../../../src';

@@ -1,0 +1,51 @@
+name: tests
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: lint and typecheck
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.x'
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run check
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [ '22.x', '24.x', '26.x' ]
+        joi: [ '17', '18' ]
+    name: test on node ${{ matrix.node }} with joi@${{ matrix.joi }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Install Joi matrix version
+        run: npm i --no-save joi@${{ matrix.joi }}
+      - name: Unit tests
+        run: npm run test:unit:once
+      - name: API tests
+        run: npm run test:api:once
+      - name: Coveralls (unit tests)
+        if: matrix.node == '24.x' && matrix.joi == '18'
+        uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable unused-imports/no-unused-vars-ts */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { INestApplication, UsePipes } from '@nestjs/common';
@@ -19,7 +18,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as Joi from 'joi';
 import { JoiSchema, JoiSchemaExtends } from 'joi-class-decorators';
 import { CREATE, JoiPipe, JoiValidationGroups } from 'nestjs-joi';
-import * as request from 'supertest';
+import request from 'supertest';
 
 describe('NestJS GraphQL integration', () => {
   @ObjectType()
@@ -170,7 +169,7 @@ describe('NestJS GraphQL integration', () => {
                 }
               `,
             })
-            .expect(res =>
+            .expect(res => {
               expect(res.body).toEqual({
                 data: {
                   [mutation]: {
@@ -178,8 +177,8 @@ describe('NestJS GraphQL integration', () => {
                     prop: 'newentity',
                   },
                 },
-              }),
-            );
+              });
+            });
         });
 
         it('should use the pipe correctly (negative test)', async () => {
@@ -201,9 +200,9 @@ describe('NestJS GraphQL integration', () => {
                 }
               `,
             })
-            .expect(res =>
-              expect(res.body.errors[0].message).toContain(`"prop" must be [${propValue}]`),
-            );
+            .expect(res => {
+              expect(res.body.errors[0].message).toContain(`"prop" must be [${propValue}]`);
+            });
         });
       });
     }
@@ -249,7 +248,7 @@ describe('NestJS GraphQL integration', () => {
                 }
               `,
         })
-        .expect(res =>
+        .expect(res => {
           expect(res.body).toEqual({
             data: {
               create_NoPipe: {
@@ -257,8 +256,8 @@ describe('NestJS GraphQL integration', () => {
                 prop: 'newentity',
               },
             },
-          }),
-        );
+          });
+        });
     });
 
     it('should use the pipe correctly (negative test)', async () => {
@@ -280,7 +279,9 @@ describe('NestJS GraphQL integration', () => {
                 }
               `,
         })
-        .expect(res => expect(res.body.errors[0].message).toContain(`"prop" must be [default]`));
+        .expect(res => {
+          expect(res.body.errors[0].message).toContain(`"prop" must be [default]`);
+        });
     });
   });
 
@@ -324,7 +325,7 @@ describe('NestJS GraphQL integration', () => {
                 }
               `,
         })
-        .expect(res =>
+        .expect(res => {
           expect(res.body).toEqual({
             data: {
               create_NoPipe: {
@@ -332,8 +333,8 @@ describe('NestJS GraphQL integration', () => {
                 prop: 'newentity',
               },
             },
-          }),
-        );
+          });
+        });
     });
 
     it('should use the pipe correctly (negative test)', async () => {
@@ -355,7 +356,9 @@ describe('NestJS GraphQL integration', () => {
                 }
               `,
         })
-        .expect(res => expect(res.body.errors[0].message).toContain(`"prop" must be [create]`));
+        .expect(res => {
+          expect(res.body.errors[0].message).toContain(`"prop" must be [create]`);
+        });
     });
   });
 });
