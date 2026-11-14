@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable unused-imports/no-unused-vars-ts */
-
 import * as API from 'nestjs-joi';
 import * as MicroserviceSubAPI from 'nestjs-joi/microservice';
 

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable unused-imports/no-unused-vars-ts */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {
   ArgumentsHost,
@@ -24,7 +23,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';
 import { JoiPipe, JoiPipeModule } from 'nestjs-joi';
-import { Observable, throwError } from 'rxjs';
+import { lastValueFrom, Observable, throwError } from 'rxjs';
 
 describe('NestJS Microservice integration', () => {
   class metatype {
@@ -306,13 +305,13 @@ describe('NestJS Microservice integration', () => {
   function defineTestCase(title: string, cmd: string, propValue: string) {
     describe(title, () => {
       it('should use the pipe correctly (positive test)', async () => {
-        const result = await client.send({ cmd }, { prop: propValue }).toPromise();
+        const result = await lastValueFrom(client.send({ cmd }, { prop: propValue }));
         expect(result).toEqual('OK');
       });
 
       it('should use the pipe correctly (negative test)', async () => {
         try {
-          const result = await client.send({ cmd }, { prop: 'duh' }).toPromise();
+          const result = await lastValueFrom(client.send({ cmd }, { prop: 'duh' }));
           throw new Error('should not be thrown');
         } catch (error) {
           expect(error).toEqual({

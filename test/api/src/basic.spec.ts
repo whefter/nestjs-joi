@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable unused-imports/no-unused-vars-ts */
-
 import * as Joi from 'joi';
 import { JoiSchema } from 'joi-class-decorators';
 import { fromPairs } from 'lodash';
@@ -128,16 +125,17 @@ describe('basic integration', () => {
     });
   });
 
-  const CASES: {
-    [name: string]: {
+  const CASES: Record<
+    string,
+    {
       fit?: boolean;
       type: Class;
       opts: { group?: string };
       payload: unknown;
       expectErrors: string[];
       notExpectErrors: string[];
-    };
-  } = {
+    }
+  > = {
     'schema constructed from empty type': {
       type: EmptyType,
       opts: {},
@@ -731,7 +729,7 @@ describe('basic integration', () => {
             }
           }
 
-          if (!expectErrors || !expectErrors.length) {
+          if (!expectErrors?.length) {
             expect(error_).toBeUndefined();
           }
         });
